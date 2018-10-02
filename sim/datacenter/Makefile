@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall -g -O
 CRT=`pwd`
-INCLUDE= -I/$(CRT)/.. -I$(CRT) 
+INCLUDE= -I.. -I. 
 #-I$(CRT)/ksp -I$(CRT)/ksp/boost
 LIB=-L.. 
 #-Lksp

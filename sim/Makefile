@@ -16,7 +16,7 @@ htsim:	$(OBJS) main.o
 	$(CC) $(CFLAGS) $(OBJS) main.o -o htsim
 
 clean:	
-	rm -f *.o htsim htsim_* libhtsim.a
+	rm -f *.o htsim htsim_* libhtsim.a parse_output
 parse_output.o: parse_output.cpp libhtsim.a
 config.o:	config.cpp config.h
 switch.o: 	switch.cpp switch.h
