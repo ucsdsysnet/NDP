@@ -5,7 +5,7 @@
 #include "switch.h"
 
 LosslessQueue::LosslessQueue(linkspeed_bps bitrate, mem_b maxsize, 
-			 EventList& eventlist, QueueLogger* logger, Switch* sw)
+                         EventList& eventlist, QueueLogger* logger, Switch* sw)
     : Queue(bitrate,maxsize,eventlist,logger), 
       _switch(sw),
       _state_send(READY),
@@ -16,7 +16,7 @@ LosslessQueue::LosslessQueue(linkspeed_bps bitrate, mem_b maxsize,
     //port, and we must have buffering for all ports except this one (assuming no one hop cycles!)
 
     if (sw)
-	sw->addPort(this);
+        sw->addPort(this);
 
     _sending = 0;
     _high_threshold = maxsize;
@@ -40,31 +40,31 @@ LosslessQueue::receivePacket(Packet& pkt)
 {
     //is this a PAUSE frame? 
     if (pkt.type()==ETH_PAUSE){
-	EthPausePacket* p = (EthPausePacket*)&pkt;
+        EthPausePacket* p = (EthPausePacket*)&pkt;
 
-	if (p->sleepTime()>0){
-	    //remote end is telling us to shut up.
-	    //assert(_state_send == READY);
-	    if (_sending)
-		//we have a packet in flight
-		_state_send = PAUSE_RECEIVED;
-	    else
-		_state_send = PAUSED;
+        if (p->sleepTime()>0){
+            //remote end is telling us to shut up.
+            //assert(_state_send == READY);
+            if (_sending)
+                //we have a packet in flight
+                _state_send = PAUSE_RECEIVED;
+            else
+                _state_send = PAUSED;
 
-	    //cout << timeAsMs(eventlist().now()) << " " << _name << " PAUSED "<<endl;	    
-	}
-	else {
-	    //we are allowed to send!
-	    _state_send = READY;
-	    //cout << timeAsMs(eventlist().now()) << " " << _name << " GO "<<endl;
+            //cout << timeAsMs(eventlist().now()) << " " << _name << " PAUSED "<<endl;	    
+        }
+        else {
+            //we are allowed to send!
+            _state_send = READY;
+            //cout << timeAsMs(eventlist().now()) << " " << _name << " GO "<<endl;
 
-	    //start transmission if we have packets to send!
-	    if(_enqueued.size()>0&&!_sending)
-		beginService();
-	}
-	
-	pkt.free();
-	return;
+            //start transmission if we have packets to send!
+            if(_enqueued.size()>0&&!_sending)
+                beginService();
+        }
+        
+        pkt.free();
+        return;
     }
 
     /* normal packet, enqueue it */
@@ -76,24 +76,24 @@ LosslessQueue::receivePacket(Packet& pkt)
 
     //send PAUSE notifications if that is the case!
     if (_queuesize > _high_threshold && _state_recv!=PAUSED){
-	_state_recv = PAUSED;
-	_switch->sendPause(this,1000);
+        _state_recv = PAUSED;
+        _switch->sendPause(this,1000);
     }
 
     //if (_state_recv==PAUSED)
     //cout << timeAsMs(eventlist().now()) << " queue " << _name << " switch (" << _switch->_name << ") "<< " recv when paused pkt " << pkt.type() << " sz " << _queuesize << endl;	
 
     if (_queuesize > _maxsize){
-	cout << " Queue " << _name << " switch (" << _switch->_name << ") "<< " LOSSLESS not working! I should have dropped this packet" << endl;
+        cout << " Queue " << _name << " switch (" << _switch->_name << ") "<< " LOSSLESS not working! I should have dropped this packet" << endl;
     }
 
     if (_logger) 
-	_logger->logQueue(*this, QueueLogger::PKT_ENQUEUE, pkt);
+        _logger->logQueue(*this, QueueLogger::PKT_ENQUEUE, pkt);
 
     if (queueWasEmpty && _state_send == READY) {
-	/* schedule the dequeue event */
-	assert(_enqueued.size()==1);
-	beginService();
+        /* schedule the dequeue event */
+        assert(_enqueued.size()==1);
+        beginService();
     }
 }
 
@@ -122,34 +122,34 @@ void LosslessQueue::completeService(){
     //}
 
     if (_state_send == PAUSE_RECEIVED)
-	_state_send = PAUSED;
+        _state_send = PAUSED;
 
     //unblock if that is the case
     if (_queuesize < _low_threshold && _state_recv == PAUSED) {
-	_switch->sendPause(this,0);
-	_state_recv = READY;
+        _switch->sendPause(this,0);
+        _state_recv = READY;
     }
 
     if (!_enqueued.empty()) {
-	if (_state_send == READY)
-	    /* start packet transmission, schedule the next dequeue event */
-	    beginService();
+        if (_state_send == READY)
+            /* start packet transmission, schedule the next dequeue event */
+            beginService();
     }
 }
 
 /*void LosslessQueue::enqueuePauseFrame(EthPausePacket* p){
     if (_enqueued.size()>0 && _state_send !=PAUSED){
-	//put pause frame ahead of all other packets waiting on this
-	//port, but not before the packet being sent on the wire now
-	Packet * q = _enqueued.back();
-	_enqueued.pop_back();
-	_enqueued.push_back(p);
-	_enqueued.push_back(q);
+        //put pause frame ahead of all other packets waiting on this
+        //port, but not before the packet being sent on the wire now
+        Packet * q = _enqueued.back();
+        _enqueued.pop_back();
+        _enqueued.push_back(p);
+        _enqueued.push_back(q);
     }
     else {
-	if(_enqueued.back()->type()!=ETH_PAUSE){
-	    _enqueued.push_back(p);
-	    beginService();
-	}
+        if(_enqueued.back()->type()!=ETH_PAUSE){
+            _enqueued.push_back(p);
+            beginService();
+        }
     }
     }*/

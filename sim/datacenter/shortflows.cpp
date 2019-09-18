@@ -5,7 +5,7 @@ string ntoa(double n);
 string itoa(uint64_t n);
 
 ShortFlows::ShortFlows(double lambda, EventList& eventlist, vector<const Route*>*** n,
-		       ConnectionMatrix* conns,Logfile* logfile,TcpRtxTimerScanner * rtx)
+                       ConnectionMatrix* conns,Logfile* logfile,TcpRtxTimerScanner * rtx)
   : EventSource(eventlist,"ShortFlows")
 {
   eventlist.sourceIsPendingRel(*this, timeFromMs(1000));
@@ -26,7 +26,7 @@ ShortFlow* ShortFlows::createConnection(int src, int dst, simtime_picosec startt
 
     f->src->setName("sf_" + ntoa(src) + "_" + ntoa(dst)+"("+ntoa(pos)+")");
     logfile->writeName(*(f->src));
-	      
+              
     f->snk->setName("sf_sink_" + ntoa(src) + "_" + ntoa(dst)+ "("+ntoa(pos)+")");
     logfile->writeName(*(f->snk));
     

@@ -6,7 +6,7 @@
 #include <sstream>
 
 CutPayloadQueue::CutPayloadQueue(linkspeed_bps bitrate, mem_b maxsize, EventList& eventlist, 
-			       QueueLogger* logger)
+                               QueueLogger* logger)
   : Queue(bitrate, maxsize, eventlist, logger)
 {
   _num_headers = 0;
@@ -48,19 +48,19 @@ CutPayloadQueue::receivePacket(Packet& pkt)
 
     pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_ARRIVE);
     if (_queuesize+pkt.size() > _threshold) {
-	//strip packet the arriving packet
-	pkt.strip_payload();
-	_num_stripped++;
-	pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_TRIM);
-	if (_logger) _logger->logQueue(*this, QueueLogger::PKT_TRIM, pkt);
+        //strip packet the arriving packet
+        pkt.strip_payload();
+        _num_stripped++;
+        pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_TRIM);
+        if (_logger) _logger->logQueue(*this, QueueLogger::PKT_TRIM, pkt);
     }
 
     if (_queuesize+pkt.size() > _maxsize) {
-	if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
-	pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_DROP);
-	pkt.free();
-	_num_drops++;
-	return;
+        if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
+        pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_DROP);
+        pkt.free();
+        _num_drops++;
+        return;
     }
 
     _enqueued.push_front(&pkt);
@@ -69,7 +69,7 @@ CutPayloadQueue::receivePacket(Packet& pkt)
     if (_logger) _logger->logQueue(*this, QueueLogger::PKT_ENQUEUE, pkt);
     
     if (queueWasEmpty)
-	beginService();
+        beginService();
 }
 
 

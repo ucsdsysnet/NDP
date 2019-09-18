@@ -22,7 +22,7 @@ class Switch {
     Switch(string s) { _name= s;}
 
     void addPort(Queue* q){
-	_ports.push_back(q);
+        _ports.push_back(q);
     }
 
     unsigned int portCount(){ return _ports.size();}

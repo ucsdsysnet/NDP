@@ -42,85 +42,85 @@ public:
   
 // should really be private, but loggers want to see:
 
-	uint32_t inflate_window(uint32_t cwnd,int newly_acked,uint32_t mss);
-	uint32_t deflate_window(uint32_t cwnd, uint32_t mss);
-	void window_changed();
-	void doNextEvent();
-	double compute_a();
-	uint32_t compute_a_scaled();
-	uint32_t compute_a_tcp();
-	double compute_alfa();
+        uint32_t inflate_window(uint32_t cwnd,int newly_acked,uint32_t mss);
+        uint32_t deflate_window(uint32_t cwnd, uint32_t mss);
+        void window_changed();
+        void doNextEvent();
+        double compute_a();
+        uint32_t compute_a_scaled();
+        uint32_t compute_a_tcp();
+        double compute_alfa();
 
-	uint64_t compute_total_bytes();
+        uint64_t compute_total_bytes();
 
-	uint32_t a;
-	// Connectivity; list of subflows
-	list<TcpSrc*> _subflows; // list of active subflows for this connection
+        uint32_t a;
+        // Connectivity; list of subflows
+        list<TcpSrc*> _subflows; // list of active subflows for this connection
 
 
-	void connect(MultipathTcpSink* sink) {
-	  _sink = sink;
-	};
+        void connect(MultipathTcpSink* sink) {
+          _sink = sink;
+        };
 
-	uint32_t get_id(){ return id;}
+        uint32_t get_id(){ return id;}
 
     virtual const string& nodename() { return _nodename; }
 #ifdef MODEL_RECEIVE_WINDOW
-	int getDataSeq(uint64_t* seq,TcpSrc* subflow);
+        int getDataSeq(uint64_t* seq,TcpSrc* subflow);
 
-	uint64_t _highest_sent;
-	uint64_t _last_acked;
+        uint64_t _highest_sent;
+        uint64_t _last_acked;
 
-	bool _packets_mapped[100000][4];
-	simtime_picosec _last_reduce[4];
+        bool _packets_mapped[100000][4];
+        simtime_picosec _last_reduce[4];
 
-	//this maintains the total number of bytes allowed in flight past the data_ack
-	//there is no need to have it signalled from the receiver if there is no flow control
-	uint64_t _receive_window;
+        //this maintains the total number of bytes allowed in flight past the data_ack
+        //there is no need to have it signalled from the receiver if there is no flow control
+        uint64_t _receive_window;
 #endif
 
-	double _alfa;
-	uint32_t compute_total_window();
-	MultipathTcpSink* _sink;
+        double _alfa;
+        uint32_t compute_total_window();
+        MultipathTcpSink* _sink;
 private:
-	MultipathTcpLogger* _logger;
+        MultipathTcpLogger* _logger;
 
-	char _cc_type;
+        char _cc_type;
 
-	double _e;
+        double _e;
 
-	string _nodename;
+        string _nodename;
 };
 
 class MultipathTcpSink : public PacketSink , public EventSource {
 public:
-	MultipathTcpSink(EventList& ev);
-	void addSubflow(TcpSink* tcp);
-	void receivePacket(Packet& pkt);
-	
-	uint64_t data_ack(){
-	  return _cumulative_ack;
-	};
-	uint64_t cumulative_ack(){ return _cumulative_ack + _received.size()*1000;}
+        MultipathTcpSink(EventList& ev);
+        void addSubflow(TcpSink* tcp);
+        void receivePacket(Packet& pkt);
+        
+        uint64_t data_ack(){
+          return _cumulative_ack;
+        };
+        uint64_t cumulative_ack(){ return _cumulative_ack + _received.size()*1000;}
 
-	uint32_t drops(){ return 0;}
-	uint32_t get_id(){ return id;}
+        uint32_t drops(){ return 0;}
+        uint32_t get_id(){ return id;}
 
-	void doNextEvent();
+        void doNextEvent();
     virtual const string& nodename() { return _nodename; }
-	list<TcpAck::seq_t> _received; // list of packets above a hole, that we've received
+        list<TcpAck::seq_t> _received; // list of packets above a hole, that we've received
 private:
 
-	// Connectivity
+        // Connectivity
 #ifdef DYNAMIC_RIGHT_SIZING
-	simtime_picosec _last_min_rtt;
-	TcpAck::seq_t _last_seq;
+        simtime_picosec _last_min_rtt;
+        TcpAck::seq_t _last_seq;
 #endif
-	list<TcpSink*> _subflows;
+        list<TcpSink*> _subflows;
 
-	// Mechanism
-	TcpAck::seq_t _cumulative_ack; // the packet we have cumulatively acked
-	
-	string _nodename;
+        // Mechanism
+        TcpAck::seq_t _cumulative_ack; // the packet we have cumulatively acked
+        
+        string _nodename;
 };
 #endif

@@ -59,11 +59,11 @@ void exit_error(char* progr) {
 
 void print_path(std::ofstream &paths,const Route* rt){
     for (unsigned int i=1;i<rt->size()-1;i+=2){
-	RandomQueue* q = (RandomQueue*)rt->at(i);
-	if (q!=NULL)
-	    paths << q->str() << " ";
-	else 
-	    paths << "NULL ";
+        RandomQueue* q = (RandomQueue*)rt->at(i);
+        if (q!=NULL)
+            paths << q->str() << " ";
+        else 
+            paths << "NULL ";
     }
 
     paths<<endl;
@@ -82,49 +82,49 @@ int main(int argc, char **argv) {
     filename << "logout.dat";
 
     while (i<argc) {
-	if (!strcmp(argv[i],"-o")) {
-	    filename.str(std::string());
-	    filename << argv[i+1];
-	    i++;
-	} else if (!strcmp(argv[i],"-conns")) {
-	    no_of_conns = atoi(argv[i+1]);
-	    cout << "no_of_conns "<<no_of_conns << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-nodes")) {
-	    no_of_nodes = atoi(argv[i+1]);
-	    cout << "no_of_nodes "<<no_of_nodes << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-cwnd")) {
-	    cwnd = atoi(argv[i+1]);
-	    cout << "cwnd "<< cwnd << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-flowsize")) {
-	    flowsize = atoi(argv[i+1]);
-	    cout << "flowsize "<< flowsize << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-q")) {
-	    queuesize = memFromPkt(atoi(argv[i+1]));
-	    i++;
-	} else if (!strcmp(argv[i],"-strat")) {
-	    if (!strcmp(argv[i+1], "perm")) {
-		route_strategy = SCATTER_PERMUTE;
-	    } else if (!strcmp(argv[i+1], "rand")) {
-		route_strategy = SCATTER_RANDOM;
-	    } else if (!strcmp(argv[i+1], "pull")) {
-		route_strategy = PULL_BASED;
-	    } else if (!strcmp(argv[i+1], "single")) {
-		route_strategy = SINGLE_PATH;
-	    }
-	    i++;
-	} else
-	    exit_error(argv[0]);
+        if (!strcmp(argv[i],"-o")) {
+            filename.str(std::string());
+            filename << argv[i+1];
+            i++;
+        } else if (!strcmp(argv[i],"-conns")) {
+            no_of_conns = atoi(argv[i+1]);
+            cout << "no_of_conns "<<no_of_conns << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-nodes")) {
+            no_of_nodes = atoi(argv[i+1]);
+            cout << "no_of_nodes "<<no_of_nodes << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-cwnd")) {
+            cwnd = atoi(argv[i+1]);
+            cout << "cwnd "<< cwnd << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-flowsize")) {
+            flowsize = atoi(argv[i+1]);
+            cout << "flowsize "<< flowsize << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-q")) {
+            queuesize = memFromPkt(atoi(argv[i+1]));
+            i++;
+        } else if (!strcmp(argv[i],"-strat")) {
+            if (!strcmp(argv[i+1], "perm")) {
+                route_strategy = SCATTER_PERMUTE;
+            } else if (!strcmp(argv[i+1], "rand")) {
+                route_strategy = SCATTER_RANDOM;
+            } else if (!strcmp(argv[i+1], "pull")) {
+                route_strategy = PULL_BASED;
+            } else if (!strcmp(argv[i+1], "single")) {
+                route_strategy = SINGLE_PATH;
+            }
+            i++;
+        } else
+            exit_error(argv[0]);
 
-	i++;
+        i++;
     }
     srand(13);
     if (route_strategy == NOT_SET) {
-	fprintf(stderr, "Route Strategy not set.  Use the -strat param.  \nValid values are perm, rand, pull, rg and single\n");
-	exit(1);
+        fprintf(stderr, "Route Strategy not set.  Use the -strat param.  \nValid values are perm, rand, pull, rg and single\n");
+        exit(1);
     }
       
     // prepare the loggers
@@ -138,8 +138,8 @@ int main(int argc, char **argv) {
     cout << "Logging path choices to " << filename.str() << endl;
     std::ofstream paths(filename.str().c_str());
     if (!paths){
-	cout << "Can't open for writing paths file!"<<endl;
-	exit(1);
+        cout << "Can't open for writing paths file!"<<endl;
+        exit(1);
     }
 #endif
 
@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 
 #ifdef FAT_TREE
     FatTreeTopology* top = new FatTreeTopology(no_of_nodes, queuesize, &logfile, 
-					       &eventlist,ff,COMPOSITE,0);
+                                               &eventlist,ff,COMPOSITE,0);
 #endif
 
 #ifdef OV_FAT_TREE
@@ -206,15 +206,15 @@ int main(int argc, char **argv) {
     int* is_dest = new int[no_of_nodes];
     
     for (int i=0;i<no_of_nodes;i++){
-	is_dest[i] = 0;
-	net_paths[i] = new vector<const Route*>*[no_of_nodes];
-	for (int j = 0;j<no_of_nodes;j++)
-	    net_paths[i][j] = NULL;
+        is_dest[i] = 0;
+        net_paths[i] = new vector<const Route*>*[no_of_nodes];
+        for (int j = 0;j<no_of_nodes;j++)
+            net_paths[i][j] = NULL;
     }
     
 #ifdef USE_FIRST_FIT
     if (ff)
-	ff->net_paths = net_paths;
+        ff->net_paths = net_paths;
 #endif
     
     vector<int>* destinations;
@@ -248,130 +248,130 @@ int main(int argc, char **argv) {
     
     int connID = 0;
     for (it = conns->connections.begin(); it!=conns->connections.end();it++){
-	int src = (*it).first;
-	destinations = (vector<int>*)(*it).second;
+        int src = (*it).first;
+        destinations = (vector<int>*)(*it).second;
 
-	for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
-	    connID++;
-	    dest = destinations->at(dst_id);
-	    extra_dst = dest; //destination for our extra source (only care about the final value of this)
-	    if (!net_paths[src][dest]) {
-		vector<const Route*>* paths = top->get_paths(src,dest);
-		net_paths[src][dest] = paths;
-		for (unsigned int i = 0; i < paths->size(); i++) {
-		    routes.push_back((*paths)[i]);
-		}
-	    }
-	    if (!net_paths[dest][src]) {
-		vector<const Route*>* paths = top->get_paths(dest,src);
-		net_paths[dest][src] = paths;
-	    }
+        for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
+            connID++;
+            dest = destinations->at(dst_id);
+            extra_dst = dest; //destination for our extra source (only care about the final value of this)
+            if (!net_paths[src][dest]) {
+                vector<const Route*>* paths = top->get_paths(src,dest);
+                net_paths[src][dest] = paths;
+                for (unsigned int i = 0; i < paths->size(); i++) {
+                    routes.push_back((*paths)[i]);
+                }
+            }
+            if (!net_paths[dest][src]) {
+                vector<const Route*>* paths = top->get_paths(dest,src);
+                net_paths[dest][src] = paths;
+            }
 
-	    for (int connection=0;connection<1;connection++){
-		cnt_con ++;
-	  
-		//if (connID%10!=0)
-	  
-		ndpSrc = new NdpSrc(NULL, NULL, eventlist);
-		ndpSrc->setCwnd(cwnd*Packet::data_packet_size());
-		//outcast flows don't share a pacer
-		pacer = new NdpPullPacer(eventlist,  1 /*pull at line rate*/);   
-		ndpSnk = new NdpSink(pacer);
-	  
-		ndpSrc->setName("ndp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
-		logfile.writeName(*ndpSrc);
-	  
-		ndpSnk->setName("ndp_sink_" + ntoa(src) + "_" + ntoa(dest)+ "("+ntoa(connection)+")");
-		logfile.writeName(*ndpSnk);
-	  
-		ndpRtxScanner.registerNdp(*ndpSrc);
-	  
-		int choice = 0;
-	  
+            for (int connection=0;connection<1;connection++){
+                cnt_con ++;
+          
+                //if (connID%10!=0)
+          
+                ndpSrc = new NdpSrc(NULL, NULL, eventlist);
+                ndpSrc->setCwnd(cwnd*Packet::data_packet_size());
+                //outcast flows don't share a pacer
+                pacer = new NdpPullPacer(eventlist,  1 /*pull at line rate*/);   
+                ndpSnk = new NdpSink(pacer);
+          
+                ndpSrc->setName("ndp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
+                logfile.writeName(*ndpSrc);
+          
+                ndpSnk->setName("ndp_sink_" + ntoa(src) + "_" + ntoa(dest)+ "("+ntoa(connection)+")");
+                logfile.writeName(*ndpSnk);
+          
+                ndpRtxScanner.registerNdp(*ndpSrc);
+          
+                int choice = 0;
+          
 #ifdef FAT_TREE
-		choice = rand()%net_paths[src][dest]->size();
+                choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef OV_FAT_TREE
-		choice = rand()%net_paths[src][dest]->size();
+                choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef MH_FAT_TREE
-		int use_all = it_sub==net_paths[src][dest]->size();
+                int use_all = it_sub==net_paths[src][dest]->size();
 
-		if (use_all)
-		    choice = inter;
-		else
-		    choice = rand()%net_paths[src][dest]->size();
+                if (use_all)
+                    choice = inter;
+                else
+                    choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef VL2
-		choice = rand()%net_paths[src][dest]->size();
+                choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef STAR
-		choice = 0;
+                choice = 0;
 #endif
-	  
-		/*if (net_paths[src][dest]->size()==K*K/4 && it_sub<=K/2){
-		  int choice2 = rand()%(K/2);*/
-	  
-		if (choice>=net_paths[src][dest]->size()){
-		    printf("Weird path choice %d out of %lu\n",choice,net_paths[src][dest]->size());
-		    exit(1);
-		}
-	  
+          
+                /*if (net_paths[src][dest]->size()==K*K/4 && it_sub<=K/2){
+                  int choice2 = rand()%(K/2);*/
+          
+                if (choice>=net_paths[src][dest]->size()){
+                    printf("Weird path choice %d out of %lu\n",choice,net_paths[src][dest]->size());
+                    exit(1);
+                }
+          
 #if PRINT_PATHS
-		for (int ll=0;ll<net_paths[src][dest]->size();ll++){
-		    paths << "Route from "<< ntoa(src) << " to " << ntoa(dest) << "  (" << ll << ") -> " ;
-		    print_path(paths,net_paths[src][dest]->at(ll));
-		}
-		/*				if (src>=12){
-						assert(net_paths[src][dest]->size()>1);
-						net_paths[src][dest]->erase(net_paths[src][dest]->begin());
-						paths << "Killing entry!" << endl;
-				  
-						if (choice>=net_paths[src][dest]->size())
-						choice = 0;
-						}*/
+                for (int ll=0;ll<net_paths[src][dest]->size();ll++){
+                    paths << "Route from "<< ntoa(src) << " to " << ntoa(dest) << "  (" << ll << ") -> " ;
+                    print_path(paths,net_paths[src][dest]->at(ll));
+                }
+                /*				if (src>=12){
+                                                assert(net_paths[src][dest]->size()>1);
+                                                net_paths[src][dest]->erase(net_paths[src][dest]->begin());
+                                                paths << "Killing entry!" << endl;
+                                  
+                                                if (choice>=net_paths[src][dest]->size())
+                                                choice = 0;
+                                                }*/
 #endif
-	  
-		routeout = new Route(*(net_paths[src][dest]->at(choice)));
-		routeout->add_endpoints(ndpSrc, ndpSnk);
+          
+                routeout = new Route(*(net_paths[src][dest]->at(choice)));
+                routeout->add_endpoints(ndpSrc, ndpSnk);
 
-		routein = new Route(*top->get_paths(dest,src)->at(choice));
-		routein->add_endpoints(ndpSnk, ndpSrc);
+                routein = new Route(*top->get_paths(dest,src)->at(choice));
+                routein->add_endpoints(ndpSnk, ndpSrc);
 
-		extrastarttime = 0 * drand();
-	  
-		ndpSrc->connect(*routeout, *routein, *ndpSnk, timeFromMs(extrastarttime));
-	  
+                extrastarttime = 0 * drand();
+          
+                ndpSrc->connect(*routeout, *routein, *ndpSnk, timeFromMs(extrastarttime));
+          
 #ifdef NDP_PACKET_SCATTER
-		ndpSrc->set_paths(net_paths[src][dest]);
-		ndpSnk->set_paths(net_paths[dest][src]);
+                ndpSrc->set_paths(net_paths[src][dest]);
+                ndpSnk->set_paths(net_paths[dest][src]);
 
-		cout << "Using PACKET SCATTER!!!!"<<endl;
-		vector<const Route*>* rts = net_paths[src][dest];
-		const Route* rt = rts->at(0);
-		PacketSink* first_queue = rt->at(0);
-		if (ndpSrc->_log_me) {
-		    cout << "First hop: " << first_queue->nodename() << endl;
-		    QueueLoggerSimple queue_logger = QueueLoggerSimple();
-		    logfile.addLogger(queue_logger);
-		    ((Queue*)first_queue)->setLogger(&queue_logger);
-		    
-		    ndpSrc->set_traffic_logger(&traffic_logger);
-		    
-		}
+                cout << "Using PACKET SCATTER!!!!"<<endl;
+                vector<const Route*>* rts = net_paths[src][dest];
+                const Route* rt = rts->at(0);
+                PacketSink* first_queue = rt->at(0);
+                if (ndpSrc->_log_me) {
+                    cout << "First hop: " << first_queue->nodename() << endl;
+                    QueueLoggerSimple queue_logger = QueueLoggerSimple();
+                    logfile.addLogger(queue_logger);
+                    ((Queue*)first_queue)->setLogger(&queue_logger);
+                    
+                    ndpSrc->set_traffic_logger(&traffic_logger);
+                    
+                }
 #endif
 
-	  
-		//	  if (ff)
-		//	    ff->add_flow(src,dest,ndpSrc);
-	  
-		sinkLogger.monitorSink(ndpSnk);
-	    }
-	}
+          
+                //	  if (ff)
+                //	    ff->add_flow(src,dest,ndpSrc);
+          
+                sinkLogger.monitorSink(ndpSnk);
+            }
+        }
     }
 
     // Add a new source sending to the last node created above.
@@ -380,13 +380,13 @@ int main(int argc, char **argv) {
     ndpSrc->setCwnd(cwnd*Packet::data_packet_size());
     //flow shares the same pacer as the last node created above
     ndpSnk = new NdpSink(pacer);
-	  
+          
     ndpSrc->setName("ndp_" + ntoa(extra_src) + "_" + ntoa(extra_dst));
     logfile.writeName(*ndpSrc);
-	  
+          
     ndpSnk->setName("ndp_sink_" + ntoa(extra_src) + "_" + ntoa(extra_dst));
     logfile.writeName(*ndpSnk);
-	  
+          
     ndpRtxScanner.registerNdp(*ndpSrc);
     
     vector<const Route*>* srcpaths = top->get_paths(extra_src, extra_dst);
@@ -419,30 +419,30 @@ int main(int argc, char **argv) {
     list <const Route*>::iterator rt_i;
     int counts[10]; int hop;
     for (int i = 0; i < 10; i++)
-	counts[i] = 0;
+        counts[i] = 0;
     for (rt_i = routes.begin(); rt_i != routes.end(); rt_i++) {
-	const Route* r = (*rt_i);
-	//print_route(*r);
-	cout << "Path:" << endl;
-	hop = 0;
-	for (int i = 0; i < r->size(); i++) {
-	    PacketSink *ps = r->at(i); 
-	    CompositeQueue *q = dynamic_cast<CompositeQueue*>(ps);
-	    if (q == 0) {
-		cout << ps->nodename() << endl;
-	    } else {
-		cout << q->nodename() << " id=" << q->id << " " << q->num_packets() << "pkts " 
-		     << q->num_headers() << "hdrs " << q->num_acks() << "acks " << q->num_nacks() << "nacks " << q->num_stripped() << "stripped"
-		     << endl;
-		counts[hop] += q->num_stripped();
-		hop++;
-	    }
-	} 
-	cout << endl;
+        const Route* r = (*rt_i);
+        //print_route(*r);
+        cout << "Path:" << endl;
+        hop = 0;
+        for (int i = 0; i < r->size(); i++) {
+            PacketSink *ps = r->at(i); 
+            CompositeQueue *q = dynamic_cast<CompositeQueue*>(ps);
+            if (q == 0) {
+                cout << ps->nodename() << endl;
+            } else {
+                cout << q->nodename() << " id=" << q->id << " " << q->num_packets() << "pkts " 
+                     << q->num_headers() << "hdrs " << q->num_acks() << "acks " << q->num_nacks() << "nacks " << q->num_stripped() << "stripped"
+                     << endl;
+                counts[hop] += q->num_stripped();
+                hop++;
+            }
+        } 
+        cout << endl;
     }
     for (int i = 0; i < 10; i++)
-	cout << "Hop " << i << " Count " << counts[i] << endl;
-	
+        cout << "Hop " << i << " Count " << counts[i] << endl;
+        
 }
 
 string ntoa(double n) {

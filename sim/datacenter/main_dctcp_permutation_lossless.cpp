@@ -62,11 +62,11 @@ void exit_error(char* progr) {
 
 void print_path(std::ofstream &paths, const Route* rt){
     for (unsigned int i=1;i<rt->size()-1;i+=2){
-	RandomQueue* q = (RandomQueue*)rt->at(i);
-	if (q!=NULL)
-	    paths << q->str() << " ";
-	else 
-	    paths << "NULL ";
+        RandomQueue* q = (RandomQueue*)rt->at(i);
+        if (q!=NULL)
+            paths << q->str() << " ";
+        else 
+            paths << "NULL ";
     }
 
     paths<<endl;
@@ -84,29 +84,29 @@ int main(int argc, char **argv) {
     filename << "logout.dat";
 
     while (i<argc) {
-	if (!strcmp(argv[i],"-o")){
-	    filename.str(std::string());
-	    filename << argv[i+1];
-	    i++;
-	} else if (!strcmp(argv[i],"-sub")){
-	    subflow_count = atoi(argv[i+1]);
-	    i++;
-	} else if (!strcmp(argv[i],"-conns")){
-	    no_of_conns = atoi(argv[i+1]);
-	    i++;
-	} else if (!strcmp(argv[i],"-nodes")){
-	    no_of_nodes = atoi(argv[i+1]);
-	    i++;
-	} else if (!strcmp(argv[i],"-cwnd")){
-	    cwnd = atoi(argv[i+1]);
-	    i++;
-	} else if (!strcmp(argv[i],"-q")){
-	    queuesize = memFromPkt(atoi(argv[i+1]));
-	    i++;
-	} else {
-	    exit_error(argv[0]);
-	}
-	i++;
+        if (!strcmp(argv[i],"-o")){
+            filename.str(std::string());
+            filename << argv[i+1];
+            i++;
+        } else if (!strcmp(argv[i],"-sub")){
+            subflow_count = atoi(argv[i+1]);
+            i++;
+        } else if (!strcmp(argv[i],"-conns")){
+            no_of_conns = atoi(argv[i+1]);
+            i++;
+        } else if (!strcmp(argv[i],"-nodes")){
+            no_of_nodes = atoi(argv[i+1]);
+            i++;
+        } else if (!strcmp(argv[i],"-cwnd")){
+            cwnd = atoi(argv[i+1]);
+            i++;
+        } else if (!strcmp(argv[i],"-q")){
+            queuesize = memFromPkt(atoi(argv[i+1]));
+            i++;
+        } else {
+            exit_error(argv[0]);
+        }
+        i++;
     }
     
     struct timeval start;
@@ -131,8 +131,8 @@ int main(int argc, char **argv) {
     cout << "Logging path choices to " << filename.str() << endl;
     std::ofstream paths(filename.str().c_str());
     if (!paths){
-	cout << "Can't open for writing paths file!"<<endl;
-	exit(1);
+        cout << "Can't open for writing paths file!"<<endl;
+        exit(1);
     }
 #endif
 
@@ -157,13 +157,13 @@ int main(int argc, char **argv) {
 
 #if USE_FIRST_FIT
     if (subflow_count==1){
-	ff = new FirstFit(timeFromMs(FIRST_FIT_INTERVAL),eventlist);
+        ff = new FirstFit(timeFromMs(FIRST_FIT_INTERVAL),eventlist);
     }
 #endif
 
 #ifdef FAT_TREE
     FatTreeTopology* top = new FatTreeTopology(no_of_nodes, queuesize, 
-					       &logfile, &eventlist,ff,LOSSLESS_INPUT_ECN,0);
+                                               &logfile, &eventlist,ff,LOSSLESS_INPUT_ECN,0);
 #endif
 
 #ifdef OV_FAT_TREE
@@ -196,15 +196,15 @@ int main(int argc, char **argv) {
     int* is_dest = new int[no_of_nodes];
     
     for (int i=0; i<no_of_nodes; i++){
-	is_dest[i] = 0;
-	net_paths[i] = new vector<const Route*>*[no_of_nodes];
-	for (int j = 0; j<no_of_nodes; j++)
-	    net_paths[i][j] = NULL;
+        is_dest[i] = 0;
+        net_paths[i] = new vector<const Route*>*[no_of_nodes];
+        for (int j = 0; j<no_of_nodes; j++)
+            net_paths[i][j] = NULL;
     }
 
 #if USE_FIRST_FIT
     if (ff)
-	ff->net_paths = net_paths;
+        ff->net_paths = net_paths;
 #endif
     
     vector<int>* destinations;
@@ -234,148 +234,148 @@ int main(int argc, char **argv) {
 
     int connID = 0;
     for (it = conns->connections.begin(); it!=conns->connections.end();it++){
-	int src = (*it).first;
-	destinations = (vector<int>*)(*it).second;
+        int src = (*it).first;
+        destinations = (vector<int>*)(*it).second;
 
-	vector<int> subflows_chosen;
+        vector<int> subflows_chosen;
       
-	for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
-	    connID++;
-	    dest = destinations->at(dst_id);
-	    if (!net_paths[src][dest]) {
-		vector<const Route*>* paths = top->get_paths(src,dest);
-		net_paths[src][dest] = paths;
-		for (unsigned int i = 0; i < paths->size(); i++) {
-		    routes.push_back((*paths)[i]);
-		}
-	    }
-	    if (!net_paths[dest][src]) {
-		vector<const Route*>* paths = top->get_paths(dest,src);
-		net_paths[dest][src] = paths;
-	    }
+        for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
+            connID++;
+            dest = destinations->at(dst_id);
+            if (!net_paths[src][dest]) {
+                vector<const Route*>* paths = top->get_paths(src,dest);
+                net_paths[src][dest] = paths;
+                for (unsigned int i = 0; i < paths->size(); i++) {
+                    routes.push_back((*paths)[i]);
+                }
+            }
+            if (!net_paths[dest][src]) {
+                vector<const Route*>* paths = top->get_paths(dest,src);
+                net_paths[dest][src] = paths;
+            }
 
-	    cout << "Connection from " << src << " to " << dest << endl;
+            cout << "Connection from " << src << " to " << dest << endl;
 
-	    for (int connection=0;connection<1;connection++){
-		subflows_chosen.clear();
+            for (int connection=0;connection<1;connection++){
+                subflows_chosen.clear();
 
-		int it_sub;
-		int crt_subflow_count = subflow_count;
-		tot_subs += crt_subflow_count;
-		cnt_con ++;
-	  
-		it_sub = crt_subflow_count > net_paths[src][dest]->size()?net_paths[src][dest]->size():crt_subflow_count;
-	  
-		//if (connID%10!=0)
-		//it_sub = 1;
-	  
-		ndpSrc = new DCTCPSrc(NULL, NULL, eventlist);
-		ndpSrc->set_ssthresh(cwnd*Packet::data_packet_size());
-		ndp_srcs.push_back(ndpSrc);
-		ndpSnk = new TcpSink();//eventlist, 1 /*pull at line rate*/);
-	  
-		ndpSrc->setName("dctcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
-		logfile.writeName(*ndpSrc);
-	  
-		ndpSnk->setName("dctcp_sink_" + ntoa(src) + "_" + ntoa(dest)+ "("+ntoa(connection)+")");
-		logfile.writeName(*ndpSnk);
-	  
-		tcpRtxScanner.registerTcp(*ndpSrc);
-	  
-		int choice = 0;
-	  
+                int it_sub;
+                int crt_subflow_count = subflow_count;
+                tot_subs += crt_subflow_count;
+                cnt_con ++;
+          
+                it_sub = crt_subflow_count > net_paths[src][dest]->size()?net_paths[src][dest]->size():crt_subflow_count;
+          
+                //if (connID%10!=0)
+                //it_sub = 1;
+          
+                ndpSrc = new DCTCPSrc(NULL, NULL, eventlist);
+                ndpSrc->set_ssthresh(cwnd*Packet::data_packet_size());
+                ndp_srcs.push_back(ndpSrc);
+                ndpSnk = new TcpSink();//eventlist, 1 /*pull at line rate*/);
+          
+                ndpSrc->setName("dctcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
+                logfile.writeName(*ndpSrc);
+          
+                ndpSnk->setName("dctcp_sink_" + ntoa(src) + "_" + ntoa(dest)+ "("+ntoa(connection)+")");
+                logfile.writeName(*ndpSnk);
+          
+                tcpRtxScanner.registerTcp(*ndpSrc);
+          
+                int choice = 0;
+          
 #ifdef FAT_TREE
-		choice = rand()%net_paths[src][dest]->size();
+                choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef OV_FAT_TREE
-		choice = rand()%net_paths[src][dest]->size();
+                choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef MH_FAT_TREE
-		int use_all = it_sub==net_paths[src][dest]->size();
+                int use_all = it_sub==net_paths[src][dest]->size();
 
-		if (use_all)
-		    choice = inter;
-		else
-		    choice = rand()%net_paths[src][dest]->size();
+                if (use_all)
+                    choice = inter;
+                else
+                    choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef VL2
-		choice = rand()%net_paths[src][dest]->size();
+                choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+          
 #ifdef STAR
-		choice = 0;
+                choice = 0;
 #endif
-	  
+          
 #ifdef BCUBE
-		//choice = inter;
-	  
-		int min = -1, max = -1,minDist = 1000,maxDist = 0;
-		if (subflow_count==1){
-		    //find shortest and longest path 
-		    for (int dd=0;dd<net_paths[src][dest]->size();dd++){
-			if (net_paths[src][dest]->at(dd)->size()<minDist){
-			    minDist = net_paths[src][dest]->at(dd)->size();
-			    min = dd;
-			}
-			if (net_paths[src][dest]->at(dd)->size()>maxDist){
-			    maxDist = net_paths[src][dest]->at(dd)->size();
-			    max = dd;
-			}
-		    }
-		    choice = min;
-		} 
-		else
-		    choice = rand()%net_paths[src][dest]->size();
+                //choice = inter;
+          
+                int min = -1, max = -1,minDist = 1000,maxDist = 0;
+                if (subflow_count==1){
+                    //find shortest and longest path 
+                    for (int dd=0;dd<net_paths[src][dest]->size();dd++){
+                        if (net_paths[src][dest]->at(dd)->size()<minDist){
+                            minDist = net_paths[src][dest]->at(dd)->size();
+                            min = dd;
+                        }
+                        if (net_paths[src][dest]->at(dd)->size()>maxDist){
+                            maxDist = net_paths[src][dest]->at(dd)->size();
+                            max = dd;
+                        }
+                    }
+                    choice = min;
+                } 
+                else
+                    choice = rand()%net_paths[src][dest]->size();
 #endif
-		//cout << "Choice "<<choice<<" out of "<<net_paths[src][dest]->size();
-		subflows_chosen.push_back(choice);
-	  
-		/*if (net_paths[src][dest]->size()==K*K/4 && it_sub<=K/2){
-		  int choice2 = rand()%(K/2);*/
-	  
-		if (choice>=net_paths[src][dest]->size()){
-		    printf("Weird path choice %d out of %lu\n",choice,net_paths[src][dest]->size());
-		    exit(1);
-		}
-	  
+                //cout << "Choice "<<choice<<" out of "<<net_paths[src][dest]->size();
+                subflows_chosen.push_back(choice);
+          
+                /*if (net_paths[src][dest]->size()==K*K/4 && it_sub<=K/2){
+                  int choice2 = rand()%(K/2);*/
+          
+                if (choice>=net_paths[src][dest]->size()){
+                    printf("Weird path choice %d out of %lu\n",choice,net_paths[src][dest]->size());
+                    exit(1);
+                }
+          
 #if PRINT_PATHS
-		for (int ll=0;ll<net_paths[src][dest]->size();ll++){
-		    paths << "Route from "<< ntoa(src) << " to " << ntoa(dest) << "  (" << ll << ") -> " ;
-		    print_path(paths,net_paths[src][dest]->at(ll));
-		}
-		/*				if (src>=12){
-						assert(net_paths[src][dest]->size()>1);
-						net_paths[src][dest]->erase(net_paths[src][dest]->begin());
-						paths << "Killing entry!" << endl;
-				  
-						if (choice>=net_paths[src][dest]->size())
-						choice = 0;
-						}*/
+                for (int ll=0;ll<net_paths[src][dest]->size();ll++){
+                    paths << "Route from "<< ntoa(src) << " to " << ntoa(dest) << "  (" << ll << ") -> " ;
+                    print_path(paths,net_paths[src][dest]->at(ll));
+                }
+                /*				if (src>=12){
+                                                assert(net_paths[src][dest]->size()>1);
+                                                net_paths[src][dest]->erase(net_paths[src][dest]->begin());
+                                                paths << "Killing entry!" << endl;
+                                  
+                                                if (choice>=net_paths[src][dest]->size())
+                                                choice = 0;
+                                                }*/
 #endif
-	  
-		routeout = new Route(*top->get_paths(src,dest)->at(choice));//*(net_paths[src][dest]->at(choice)));
-		routeout->push_back(ndpSnk);
-		
-		//routein = new Route();
+          
+                routeout = new Route(*top->get_paths(src,dest)->at(choice));//*(net_paths[src][dest]->at(choice)));
+                routeout->push_back(ndpSnk);
+                
+                //routein = new Route();
 
-		routein = new Route(*top->get_paths(dest,src)->at(choice));
-		routein->push_back(ndpSrc);
+                routein = new Route(*top->get_paths(dest,src)->at(choice));
+                routein->push_back(ndpSrc);
 
-		extrastarttime = 0 * drand();
-	  
-		ndpSrc->connect(*routeout, *routein, *ndpSnk, timeFromMs(extrastarttime));
-		
-		cout << "Path at connect " << endl;
-		for (int x = 0;x<routeout->size();x++){
-		    cout << routeout->at(x)->nodename() << endl;
-		}
-	  
-		sinkLogger.monitorSink(ndpSnk);
-	    }
-	}
+                extrastarttime = 0 * drand();
+          
+                ndpSrc->connect(*routeout, *routein, *ndpSnk, timeFromMs(extrastarttime));
+                
+                cout << "Path at connect " << endl;
+                for (int x = 0;x<routeout->size();x++){
+                    cout << routeout->at(x)->nodename() << endl;
+                }
+          
+                sinkLogger.monitorSink(ndpSnk);
+            }
+        }
     }
     //    ShortFlows* sf = new ShortFlows(2560, eventlist, net_paths,conns,lg, &ndpRtxScanner);
 

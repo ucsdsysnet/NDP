@@ -33,9 +33,9 @@ class NdpSink;
 class ReceiptEvent {
   public:
     ReceiptEvent()
-	: _path_id(-1), _is_header(false) {};
+        : _path_id(-1), _is_header(false) {};
     ReceiptEvent(uint32_t path_id, bool is_header)
-	: _path_id(path_id), _is_header(is_header) {}
+        : _path_id(path_id), _is_header(is_header) {}
     inline int32_t path_id() const {return _path_id;}
     inline bool is_header() const {return _is_header;}
     int32_t _path_id;
@@ -54,7 +54,7 @@ class NdpSrc : public PacketSink, public EventSource {
     static void setMinRTO(uint32_t min_rto_in_us) {_min_rto = timeFromUs((uint32_t)min_rto_in_us);}
     static void setRouteStrategy(RouteStrategy strat) {_route_strategy = strat;}
     void set_flowsize(uint64_t flow_size_in_bytes) {
-	_flow_size = flow_size_in_bytes;
+        _flow_size = flow_size_in_bytes;
     }
 
 
@@ -221,7 +221,7 @@ class NdpSink : public PacketSink, public DataReceiver, public Logged {
     void connect(NdpSrc& src, Route& route);
 
     inline uint32_t flow_id() const {
-	return _src->flow_id();
+        return _src->flow_id();
     };
 
     // the following are used with SCATTER_PERMUTE, SCATTER_RANDOM,
@@ -248,12 +248,12 @@ class NdpSink : public PacketSink, public DataReceiver, public Logged {
     //Path History
     void update_path_history(const NdpPacket& p);
 #define HISTORY_PER_PATH 4 //how much history to hold - we hold an
-			   //average of HISTORY_PER_PATH entries for
-			   //each possible path
+                           //average of HISTORY_PER_PATH entries for
+                           //each possible path
     vector<ReceiptEvent> _path_history;  //this is a bit heavyweight,
-					 //but it will let us
-					 //experiment with different
-					 //algorithms
+                                         //but it will let us
+                                         //experiment with different
+                                         //algorithms
     int _path_hist_index; //index of last entry to be added to _path_history
     int _path_hist_first; //index of oldest entry added to _path_history
     int _no_of_paths;

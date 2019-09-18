@@ -30,12 +30,12 @@ class Logger {
     friend class Logfile;
  public:
     enum EventType { QUEUE_EVENT=0, TCP_EVENT=1, TCP_STATE=2, TRAFFIC_EVENT=3, 
-		     QUEUE_RECORD=4, QUEUE_APPROX=5, TCP_RECORD=6, 
-		     QCN_EVENT=7, QCNQUEUE_EVENT=8, 
-		     TCP_TRAFFIC=9, NDP_TRAFFIC=10, 
-		     TCP_SINK = 11, MTCP = 12, ENERGY = 13, 
-		     TCP_MEMORY = 14, NDP_EVENT=15, NDP_STATE=16, NDP_RECORD=17, 
-		     NDP_SINK = 18, NDP_MEMORY = 19};
+                     QUEUE_RECORD=4, QUEUE_APPROX=5, TCP_RECORD=6, 
+                     QCN_EVENT=7, QCNQUEUE_EVENT=8, 
+                     TCP_TRAFFIC=9, NDP_TRAFFIC=10, 
+                     TCP_SINK = 11, MTCP = 12, ENERGY = 13, 
+                     TCP_MEMORY = 14, NDP_EVENT=15, NDP_STATE=16, NDP_RECORD=17, 
+                     NDP_SINK = 18, NDP_MEMORY = 19};
     static string event_to_str(RawLogEvent& event);
     Logger() {};
     virtual ~Logger(){};
@@ -78,8 +78,8 @@ class EnergyLogger  : public Logger {
 class TcpLogger  : public Logger {
  public:
     enum TcpEvent { TCP_RCV=0, TCP_RCV_FR_END=1, TCP_RCV_FR=2, TCP_RCV_DUP_FR=3, 
-		    TCP_RCV_DUP=4, TCP_RCV_3DUPNOFR=5, 
-		    TCP_RCV_DUP_FASTXMIT=6, TCP_TIMEOUT=7 };
+                    TCP_RCV_DUP=4, TCP_RCV_3DUPNOFR=5, 
+                    TCP_RCV_DUP_FASTXMIT=6, TCP_TIMEOUT=7 };
     enum TcpState { TCPSTATE_CNTRL=0, TCPSTATE_SEQ=1 };
     enum TcpRecord { AVE_CWND=0 };
     enum TcpSinkRecord { RATE = 0 };
@@ -92,8 +92,8 @@ class TcpLogger  : public Logger {
 class NdpLogger  : public Logger {
  public:
     enum NdpEvent { NDP_RCV=0, NDP_RCV_FR_END=1, NDP_RCV_FR=2, NDP_RCV_DUP_FR=3, 
-		    NDP_RCV_DUP=4, NDP_RCV_3DUPNOFR=5, 
-		    NDP_RCV_DUP_FASTXMIT=6, NDP_TIMEOUT=7 };
+                    NDP_RCV_DUP=4, NDP_RCV_3DUPNOFR=5, 
+                    NDP_RCV_DUP_FASTXMIT=6, NDP_TIMEOUT=7 };
     enum NdpState { NDPSTATE_CNTRL=0, NDPSTATE_SEQ=1 };
     enum NdpRecord { AVE_CWND=0 };
     enum NdpSinkRecord { RATE = 0 };
@@ -106,8 +106,8 @@ class NdpLogger  : public Logger {
 class NdpLiteLogger  : public Logger {
  public:
     enum NdpLiteEvent { NDP_RCV=0, NDP_RCV_FR_END=1, NDP_RCV_FR=2, NDP_RCV_DUP_FR=3, 
-		    NDP_RCV_DUP=4, NDP_RCV_3DUPNOFR=5, 
-		    NDP_RCV_DUP_FASTXMIT=6, NDP_TIMEOUT=7 };
+                    NDP_RCV_DUP=4, NDP_RCV_3DUPNOFR=5, 
+                    NDP_RCV_DUP_FASTXMIT=6, NDP_TIMEOUT=7 };
     enum NdpLiteState { NDPSTATE_CNTRL=0, NDPSTATE_SEQ=1 };
     enum NdpLiteRecord { AVE_CWND=0 };
     enum NdpLiteSinkRecord { RATE = 0 };

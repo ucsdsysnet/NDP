@@ -62,19 +62,19 @@ class Packet {
     virtual void free();
 
     static void set_packet_size(int packet_size) {
-	// Use Packet::set_packet_size() to change the default packet
-	// size for TCP or NDP data packets.  You MUST call this
-	// before the value has been used to initialize anything else.
-	// If someone has already read the value of packet size, no
-	// longer allow it to be changed, or all hell will break
-	// loose.
-	assert(_packet_size_fixed == false);
-	_data_packet_size = packet_size;
+        // Use Packet::set_packet_size() to change the default packet
+        // size for TCP or NDP data packets.  You MUST call this
+        // before the value has been used to initialize anything else.
+        // If someone has already read the value of packet size, no
+        // longer allow it to be changed, or all hell will break
+        // loose.
+        assert(_packet_size_fixed == false);
+        _data_packet_size = packet_size;
     }
 
     static int data_packet_size() {
-	_packet_size_fixed = true;
-	return _data_packet_size;
+        _packet_size_fixed = true;
+        return _data_packet_size;
     }
 
     virtual PacketSink* sendOn(); // "go on to the next hop along your route"
@@ -107,11 +107,11 @@ class Packet {
     string str() const;
  protected:
     void set_route(PacketFlow& flow, const Route &route, 
-	     int pkt_size, packetid_t id);
+             int pkt_size, packetid_t id);
     void set_attrs(PacketFlow& flow, int pkt_size, packetid_t id);
 
     static int _data_packet_size; // default size of a TCP or NDP data packet,
-				  // measured in bytes
+                                  // measured in bytes
     static bool _packet_size_fixed; //prevent foot-shooting
     
     packet_type _type;
@@ -137,7 +137,7 @@ class PacketSink {
     virtual ~PacketSink() {}
     virtual void receivePacket(Packet& pkt) =0;
     virtual void receivePacket(Packet& pkt,VirtualQueue* previousHop) {
-	receivePacket(pkt);
+        receivePacket(pkt);
     };
     virtual const string& nodename()=0;
 };
@@ -152,16 +152,16 @@ template<class P>
 class PacketDB {
  public:
     P* allocPacket() {
-	if (_freelist.empty()) {
-	    return new P();
-	} else {
-	    P* p = _freelist.back();
-	    _freelist.pop_back();
-	    return p;
-	}
+        if (_freelist.empty()) {
+            return new P();
+        } else {
+            P* p = _freelist.back();
+            _freelist.pop_back();
+            return p;
+        }
     };
     void freePacket(P* pkt) {
-	_freelist.push_back(pkt);
+        _freelist.push_back(pkt);
     };
 
  protected:

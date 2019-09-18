@@ -76,7 +76,7 @@ class QueueLoggerSampling : public QueueLogger, public EventSource {
 class SinkLoggerSampling : public Logger, public EventSource {
  public:
     SinkLoggerSampling(simtime_picosec period, EventList& eventlist,
-		       Logger::EventType sink_type, int _event_type);
+                       Logger::EventType sink_type, int _event_type);
     virtual void doNextEvent();
     void monitorSink(DataReceiver* sink);
     void monitorMultipathSink(DataReceiver* sink);
@@ -90,15 +90,15 @@ class SinkLoggerSampling : public Logger, public EventSource {
 
     struct lttime
     {
-	bool operator()(const MultipathTcpSrc* i1, const MultipathTcpSrc* i2) const
-	{
-	    return i1->id<i2->id;
-	}
+        bool operator()(const MultipathTcpSrc* i1, const MultipathTcpSrc* i2) const
+        {
+            return i1->id<i2->id;
+        }
     };
     typedef map<MultipathTcpSrc*,double,lttime> multipath_map;
     multipath_map _multipath_src;
     multipath_map _multipath_seq;
-	
+        
     simtime_picosec _last_time;
     simtime_picosec _period;
     Logger::EventType _sink_type;
@@ -154,7 +154,7 @@ class QcnLoggerSimple : public QcnLogger {
     void logQcn(QcnReactor &src, QcnEvent ev, double var3);
 
     void logQcnQueue(QcnQueue &src, QcnQueueEvent ev, double var1, 
-		     double var2, double var3);
+                     double var2, double var3);
     static string event_to_str(RawLogEvent& event);
 };
 

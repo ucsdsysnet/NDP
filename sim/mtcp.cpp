@@ -11,24 +11,24 @@
 MultipathTcpSrc::MultipathTcpSrc(char cc_type,EventList& ev,MultipathTcpLogger* logger, int rwnd):
   EventSource(ev,"MTCP"),_alfa(1),_logger(logger), _e(1)
 {
-	_cc_type = cc_type;
-	a = A_SCALE;
-	_sink = NULL;
+        _cc_type = cc_type;
+        a = A_SCALE;
+        _sink = NULL;
 
 #ifdef MODEL_RECEIVE_WINDOW
-	_highest_sent = 0;
-	_last_acked = 0;
+        _highest_sent = 0;
+        _last_acked = 0;
 
-	_receive_window = rwnd * 1000;
+        _receive_window = rwnd * 1000;
 
-	for (int i=0;i<100000;i++)
-	  for (int j=0;j<4;j++)
-	    _packets_mapped[i][j] = 0;
-	for (int j=0;j<4;j++)
-	  _last_reduce[j] = 0;
+        for (int i=0;i<100000;i++)
+          for (int j=0;j<4;j++)
+            _packets_mapped[i][j] = 0;
+        for (int j=0;j<4;j++)
+          _last_reduce[j] = 0;
 #endif
-	eventlist().sourceIsPending(*this,timeFromSec(3));
-	_nodename = "mtcpsrc";
+        eventlist().sourceIsPending(*this,timeFromSec(3));
+        _nodename = "mtcpsrc";
 }
 
 void MultipathTcpSrc::addSubflow(TcpSrc* subflow){
@@ -89,10 +89,10 @@ int MultipathTcpSrc::getDataSeq(uint64_t* seq, TcpSrc* subflow){
 
     for (int j=0;j<4;j++)
       if (_packets_mapped[pos][j]){
-	if (slow_subflow_id < 0)
-	  slow_subflow_id = j;
-	else 
-	  slow_subflow_id = 4;
+        if (slow_subflow_id < 0)
+          slow_subflow_id = j;
+        else 
+          slow_subflow_id = 4;
       }
 
     if (slow_subflow_id>=0 && slow_subflow_id<4 && slow_subflow_id!=subflow->_subflow_id){
@@ -106,12 +106,12 @@ int MultipathTcpSrc::getDataSeq(uint64_t* seq, TcpSrc* subflow){
       //stall
 
       if ((src->effective_window()/timeAsMs(src->_rtt))<subflow->effective_window()/timeAsMs(subflow->_rtt) &&
-	  eventlist().now()-_last_reduce[slow_subflow_id] > src->_rtt){
-	src->_ssthresh = deflate_window(src->_cwnd,src->_mss);
-	src->_cwnd = src->_ssthresh;
-	
-	_last_reduce[slow_subflow_id] = eventlist().now();
-	//	cout << "PEN"<<endl;
+          eventlist().now()-_last_reduce[slow_subflow_id] > src->_rtt){
+        src->_ssthresh = deflate_window(src->_cwnd,src->_mss);
+        src->_cwnd = src->_ssthresh;
+        
+        _last_reduce[slow_subflow_id] = eventlist().now();
+        //	cout << "PEN"<<endl;
       }
     }
 #endif
@@ -129,13 +129,13 @@ int MultipathTcpSrc::getDataSeq(uint64_t* seq, TcpSrc* subflow){
       src = *i;*/
       
       if (!_packets_mapped[pos][subflow->_subflow_id]){
-	  //	  	  && 4 * subflow->_rtt < src->_rtt){
-	*seq = packet;
-	_packets_mapped[pos][subflow->_subflow_id] = 1;
+          //	  	  && 4 * subflow->_rtt < src->_rtt){
+        *seq = packet;
+        _packets_mapped[pos][subflow->_subflow_id] = 1;
 
-	//	cout << "RX"<<endl;
-	return 1;
-	}
+        //	cout << "RX"<<endl;
+        return 1;
+        }
       packet += 1000;
       break;
     }
@@ -163,8 +163,8 @@ MultipathTcpSrc::inflate_window(uint32_t cwnd, int newly_acked,uint32_t mss) {
   case UNCOUPLED:
     if ((cwnd + tcp_inc)/mss != cwnd/mss){
       if (_logger){
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
       }
     }
     return cwnd + tcp_inc;
@@ -184,8 +184,8 @@ MultipathTcpSrc::inflate_window(uint32_t cwnd, int newly_acked,uint32_t mss) {
 
     if ((cwnd + tmp)/mss != cwnd/mss){
       if (_logger){
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
       }
     }
 
@@ -210,7 +210,7 @@ MultipathTcpSrc::inflate_window(uint32_t cwnd, int newly_acked,uint32_t mss) {
     }
     
     if (tmp>tcp_inc)//capping
-	   tmp = tcp_inc;
+           tmp = tcp_inc;
 
     if (tmp_float>tcp_inc)//capping
       tmp_float = tcp_inc;
@@ -221,9 +221,9 @@ MultipathTcpSrc::inflate_window(uint32_t cwnd, int newly_acked,uint32_t mss) {
     if ((cwnd + tmp_float)/mss != cwnd/mss){
       a = compute_a_scaled();
       if (_logger){
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
       }
     }
 
@@ -240,9 +240,9 @@ MultipathTcpSrc::inflate_window(uint32_t cwnd, int newly_acked,uint32_t mss) {
     if ((cwnd + tmp)/mss != cwnd/mss){
       //a = compute_a_tcp();
       if (_logger){
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
-	//_logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
+        //_logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
       }
     }
     return cwnd + tmp;
@@ -260,13 +260,13 @@ MultipathTcpSrc::inflate_window(uint32_t cwnd, int newly_acked,uint32_t mss) {
 
     if ((cwnd + tmp)/mss != cwnd/mss){
       if (_e>0&&_e<2)
-	_alfa = compute_alfa();
+        _alfa = compute_alfa();
 
       if (_logger){
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
-	}
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
+        }
     }
     return cwnd + tmp;
     
@@ -293,9 +293,9 @@ void MultipathTcpSrc::window_changed(){
   case COUPLED_INC:
       a = compute_a_scaled();
       if (_logger){
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
-	_logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::WINDOW_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::RTT_UPDATE);
+        _logger->logMultipathTcp(*this,MultipathTcpLogger::CHANGE_A);
       }
       return;
   }
@@ -339,8 +339,8 @@ MultipathTcpSrc::compute_total_window(){
 
   //  printf ("Tot wnd ");
   for (it = _subflows.begin();it!=_subflows.end();it++){
-	TcpSrc& crt = *(*it);
-	crt_wnd += crt._in_fast_recovery?crt._ssthresh:crt._cwnd;
+        TcpSrc& crt = *(*it);
+        crt_wnd += crt._in_fast_recovery?crt._ssthresh:crt._cwnd;
   }
 
   return crt_wnd;
@@ -352,8 +352,8 @@ MultipathTcpSrc::compute_total_bytes(){
   uint64_t b = 0;
 
   for (it = _subflows.begin();it!=_subflows.end();it++){
-	TcpSrc& crt = *(*it);
-	b += crt._last_acked;
+        TcpSrc& crt = *(*it);
+        b += crt._last_acked;
   }
 
   return b;
@@ -457,11 +457,11 @@ double MultipathTcpSrc::compute_alfa(){
       uint32_t rtt = timeAsMs(flow._rtt);
       
       if (rtt==0)
-	rtt = 1;
+        rtt = 1;
 
       double t = pow(cwnd,_e/2)/rtt;
       if (t>maxt)
-	maxt = t;
+        maxt = t;
 
       sum_denominator += ((double)cwnd/rtt);
     }
@@ -653,11 +653,11 @@ MultipathTcpSink::receivePacket(Packet& pkt) {
     else { // uncommon case - it fills a hole
       list<uint64_t>::iterator i;
       for (i = _received.begin(); i != _received.end(); i++) {
-	if (seqno == *i) break; // it's a bad retransmit
-	if (seqno < (*i)) {
-	  _received.insert(i, seqno);
-	  break;
-	}
+        if (seqno == *i) break; // it's a bad retransmit
+        if (seqno < (*i)) {
+          _received.insert(i, seqno);
+          break;
+        }
       }
     }
   }

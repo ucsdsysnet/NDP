@@ -15,17 +15,17 @@
 class Queue : public EventSource, public PacketSink {
  public:
     Queue(linkspeed_bps bitrate, mem_b maxsize, EventList &eventlist, 
-	  QueueLogger* logger);
+          QueueLogger* logger);
     virtual void receivePacket(Packet& pkt);
     void doNextEvent();
     // should really be private, but loggers want to see
     mem_b _maxsize; 
 
     inline simtime_picosec drainTime(Packet *pkt) { 
-	return (simtime_picosec)(pkt->size() * _ps_per_byte); 
+        return (simtime_picosec)(pkt->size() * _ps_per_byte); 
     }
     inline mem_b serviceCapacity(simtime_picosec t) { 
-	return (mem_b)(timeAsSec(t) * (double)_bitrate); 
+        return (mem_b)(timeAsSec(t) * (double)_bitrate); 
     }
     virtual mem_b queuesize();
     simtime_picosec serviceTime();
@@ -37,11 +37,11 @@ class Queue : public EventSource, public PacketSink {
     Queue* getRemoteEndpoint() {return _remoteEndpoint;}
 
     virtual void setName(const string& name) {
-	Logged::setName(name); 
-	_nodename += name;
+        Logged::setName(name); 
+        _nodename += name;
     }
     virtual void setLogger(QueueLogger* logger) {
-	_logger = logger;
+        _logger = logger;
     }
     virtual const string& nodename() { return _nodename; }
 
@@ -71,7 +71,7 @@ class PriorityQueue : public Queue {
  public:
     typedef enum {Q_LO=0, Q_MID=1, Q_HI=2, Q_NONE=3} queue_priority_t;
     PriorityQueue(linkspeed_bps bitrate, mem_b maxsize, EventList &eventlist, 
-		  QueueLogger* logger);
+                  QueueLogger* logger);
     virtual void receivePacket(Packet& pkt);
     virtual mem_b queuesize();
     simtime_picosec serviceTime(Packet& pkt);

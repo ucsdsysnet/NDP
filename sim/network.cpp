@@ -20,7 +20,7 @@ Packet::set_attrs(PacketFlow& flow, int pkt_size, packetid_t id){
 
 void 
 Packet::set_route(PacketFlow& flow, const Route &route, int pkt_size, 
-	    packetid_t id){
+            packetid_t id){
     _flow = &flow;
     _size = pkt_size;
     _id = id;
@@ -39,20 +39,20 @@ PacketSink *
 Packet::sendOn() {
     PacketSink* nextsink;
     if (_route) {
-	if (_bounced) {
-	    assert(_nexthop > 0);
-	    assert(_nexthop < _route->size());
-	    assert(_nexthop < _route->reverse()->size());
-	    //assert(_route->size() == _route->reverse()->size());
-	    nextsink = _route->reverse()->at(_nexthop);
-	    _nexthop++;
-	} else {
-	    assert(_nexthop<_route->size());
-	    nextsink = _route->at(_nexthop);
-	    _nexthop++;
-	}
+        if (_bounced) {
+            assert(_nexthop > 0);
+            assert(_nexthop < _route->size());
+            assert(_nexthop < _route->reverse()->size());
+            //assert(_route->size() == _route->reverse()->size());
+            nextsink = _route->reverse()->at(_nexthop);
+            _nexthop++;
+        } else {
+            assert(_nexthop<_route->size());
+            nextsink = _route->at(_nexthop);
+            _nexthop++;
+        }
     } else {
-	assert(0);
+        assert(0);
     }
     nextsink->receivePacket(*this);
     return nextsink;
@@ -62,20 +62,20 @@ PacketSink *
 Packet::sendOn2(VirtualQueue* crtSink) {
     PacketSink* nextsink;
     if (_route) {
-	if (_bounced) {
-	    assert(_nexthop > 0);
-	    assert(_nexthop < _route->size());
-	    assert(_nexthop < _route->reverse()->size());
-	    //assert(_route->size() == _route->reverse()->size());
-	    nextsink = _route->reverse()->at(_nexthop);
-	    _nexthop++;
-	} else {
-	    assert(_nexthop<_route->size());
-	    nextsink = _route->at(_nexthop);
-	    _nexthop++;
-	}
+        if (_bounced) {
+            assert(_nexthop > 0);
+            assert(_nexthop < _route->size());
+            assert(_nexthop < _route->reverse()->size());
+            //assert(_route->size() == _route->reverse()->size());
+            nextsink = _route->reverse()->at(_nexthop);
+            _nexthop++;
+        } else {
+            assert(_nexthop<_route->size());
+            nextsink = _route->at(_nexthop);
+            _nexthop++;
+        }
     } else {
-	assert(0);
+        assert(0);
     }
     nextsink->receivePacket(*this,crtSink);
     return nextsink;
@@ -120,44 +120,44 @@ Packet::str() const {
     string s;
     switch (_type) {
     case IP:
-	s = "IP";
-	break;
+        s = "IP";
+        break;
     case TCP:
-	s = "TCP";
-	break;
+        s = "TCP";
+        break;
     case TCPACK:
-	s = "TCPACK";
-	break;
+        s = "TCPACK";
+        break;
     case TCPNACK:
-	s = "TCPNACK";
-	break;
+        s = "TCPNACK";
+        break;
     case NDP:
-	s = "NDP";
-	break;
+        s = "NDP";
+        break;
     case NDPACK:
-	s = "NDPACK";
-	break;
+        s = "NDPACK";
+        break;
     case NDPNACK:
-	s = "NDPNACK";
-	break;
+        s = "NDPNACK";
+        break;
     case NDPPULL:
-	s = "NDPPULL";
-	break;
+        s = "NDPPULL";
+        break;
     case NDPLITE:
-	s = "NDPLITE";
-	break;
+        s = "NDPLITE";
+        break;
     case NDPLITEACK:
-	s = "NDPLITEACK";
-	break;
+        s = "NDPLITEACK";
+        break;
     case NDPLITERTS:
-	s = "NDPLITERTS";
-	break;
+        s = "NDPLITERTS";
+        break;
     case NDPLITEPULL:
-	s = "NDPLITEPULL";
-	break;
+        s = "NDPLITEPULL";
+        break;
     case ETH_PAUSE:
-	s = "ETHPAUSE";
-	break;
+        s = "ETHPAUSE";
+        break;
     }
     return s;
 }
@@ -178,15 +178,15 @@ void PacketFlow::set_logger(TrafficLogger *logger) {
 void 
 PacketFlow::logTraffic(Packet& pkt, Logged& location, TrafficLogger::TrafficEvent ev) {
     if (_logger)
-	_logger->logTraffic(pkt, location, ev);
+        _logger->logTraffic(pkt, location, ev);
 }
 
 void print_route(const Route& route) {
     for (int i = 0; i < route.size(); i++) {
-	PacketSink* sink = route.at(i);
-	if (i > 0) 
-	    cout << " -> ";
-	cout << sink->nodename();
+        PacketSink* sink = route.at(i);
+        if (i > 0) 
+            cout << " -> ";
+        cout << sink->nodename();
     }
     cout << endl;
 }

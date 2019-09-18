@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 
 #include "eventlist.h"
 //#include <iostream>
@@ -16,10 +16,10 @@ EventList::setEndtime(simtime_picosec endtime)
 }
 
 bool
-EventList::doNextEvent() 
+EventList::doNextEvent()
 {
     if (_pendingsources.empty())
-	return false;
+        return false;
     simtime_picosec nexteventtime = _pendingsources.begin()->first;
     EventSource* nextsource = _pendingsources.begin()->second;
     _pendingsources.erase(_pendingsources.begin());
@@ -30,36 +30,36 @@ EventList::doNextEvent()
 }
 
 
-void 
-EventList::sourceIsPending(EventSource &src, simtime_picosec when) 
+void
+EventList::sourceIsPending(EventSource &src, simtime_picosec when)
 {
     /*
     pendingsources_t::iterator i = _pendingsources.begin();
     while (i != _pendingsources.end()) {
-	if (i->second == &src)
-	    abort();
-	i++;
+        if (i->second == &src)
+            abort();
+        i++;
     }
     */
-    
+
     assert(when>=now());
     if (_endtime==0 || when<_endtime)
-	_pendingsources.insert(make_pair(when,&src));
+        _pendingsources.insert(make_pair(when,&src));
 }
 
-void 
+void
 EventList::cancelPendingSource(EventSource &src) {
     pendingsources_t::iterator i = _pendingsources.begin();
     while (i != _pendingsources.end()) {
-	if (i->second == &src) {
-	    _pendingsources.erase(i);
-	    return;
-	}
-	i++;
+        if (i->second == &src) {
+            _pendingsources.erase(i);
+            return;
+        }
+        i++;
     }
 }
 
-void 
+void
 EventList::reschedulePendingSource(EventSource &src, simtime_picosec when) {
     cancelPendingSource(src);
     sourceIsPending(src, when);

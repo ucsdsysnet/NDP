@@ -11,7 +11,7 @@ void
 Route::add_endpoints(PacketSink *src, PacketSink* dst) {
     _sinklist.push_back(dst);
     if (_reverse) {
-	_reverse->push_back(src);
+        _reverse->push_back(src);
     }
 }
 

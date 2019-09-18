@@ -42,7 +42,7 @@ class BCubeTopology: public Topology{
   EventList* eventlist;
   
   BCubeTopology(int no_of_nodes, int ports_per_switch, int no_of_levels, 
-		Logfile* log,EventList* ev,FirstFit* f, queue_type q);
+                Logfile* log,EventList* ev,FirstFit* f, queue_type q);
 
   void init_network();
   virtual vector<const Route*>* get_paths(int src, int dest);

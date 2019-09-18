@@ -45,15 +45,15 @@ LosslessInputQueue::receivePacket(Packet& pkt)
 
     //send PAUSE notifications if that is the case!
     if (_queuesize > _high_threshold && _state_recv!=PAUSED){
-	_state_recv = PAUSED;
-	sendPause(1000);
+        _state_recv = PAUSED;
+        sendPause(1000);
     }
 
     //if (_state_recv==PAUSED)
     //cout << timeAsMs(eventlist().now()) << " queue " << _name << " switch (" << _switch->_name << ") "<< " recv when paused pkt " << pkt.type() << " sz " << _queuesize << endl;	
 
     if (_queuesize > _maxsize){
-	cout << " Queue " << _name << " LOSSLESS not working! I should have dropped this packet" << endl;
+        cout << " Queue " << _name << " LOSSLESS not working! I should have dropped this packet" << endl;
     }
 
     //tell the output queue we're here!
@@ -65,8 +65,8 @@ void LosslessInputQueue::completedService(Packet& pkt){
 
     //unblock if that is the case
     if (_queuesize < _low_threshold && _state_recv == PAUSED) {
-	sendPause(0);
-	_state_recv = READY;
+        sendPause(0);
+        _state_recv = READY;
     }
 }
 

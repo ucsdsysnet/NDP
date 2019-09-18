@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "config.h"
 #include <sstream>
 #include <strstream>
@@ -60,11 +60,11 @@ void exit_error(char* progr, char *param) {
 
 void print_path(std::ofstream &paths, const Route* rt){
     for (unsigned int i=1;i<rt->size()-1;i+=2){
-	RandomQueue* q = (RandomQueue*)rt->at(i);
-	if (q!=NULL)
-	    paths << q->str() << " ";
-	else 
-	    paths << "NULL ";
+        RandomQueue* q = (RandomQueue*)rt->at(i);
+        if (q!=NULL)
+            paths << q->str() << " ";
+        else
+            paths << "NULL ";
     }
 
     paths<<endl;
@@ -84,64 +84,64 @@ int main(int argc, char **argv) {
     filename << "logout.dat";
 
     while (i<argc) {
-	if (!strcmp(argv[i],"-o")){
-	    filename.str(std::string());
-	    filename << argv[i+1];
-	    i++;
-	} else if (!strcmp(argv[i],"-sub")){
-	    subflow_count = atoi(argv[i+1]);
-	    i++;
-	} else if (!strcmp(argv[i],"-conns")){
-	    no_of_conns = atoi(argv[i+1]);
-	    cout << "no_of_conns "<<no_of_conns << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-nodes")){
-	    no_of_nodes = atoi(argv[i+1]);
-	    cout << "no_of_nodes "<<no_of_nodes << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-ssthresh")){
-	    ssthresh = atoi(argv[i+1]);
-	    cout << "ssthresh "<< ssthresh << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-q")){
-	    queuesize = memFromPkt(atoi(argv[i+1]));
-	    cout << "queuesize "<<queuesize << endl;
-	    i++;
-	} else if (!strcmp(argv[i],"-fail")){
-	    failed_links = atoi(argv[i+1]);
-	    cout << "failed_links "<<failed_links << endl;
-	    i++;
-	} else if (!strcmp(argv[i], "UNCOUPLED"))
-	    algo = UNCOUPLED;
-	else if (!strcmp(argv[i], "COUPLED_INC"))
-	    algo = COUPLED_INC;
-	else if (!strcmp(argv[i], "FULLY_COUPLED"))
-	    algo = FULLY_COUPLED;
-	else if (!strcmp(argv[i], "COUPLED_TCP"))
-	    algo = COUPLED_TCP;
-	else if (!strcmp(argv[i], "COUPLED_SCALABLE_TCP"))
-	    algo = COUPLED_SCALABLE_TCP;
-	else if (!strcmp(argv[i], "COUPLED_EPSILON")) {
-	    algo = COUPLED_EPSILON;
-	    if (argc > i+1){
-		epsilon = atof(argv[i+1]);
-		i++;
-	    }
-	    printf("Using epsilon %f\n", epsilon);
-	} else
-	    exit_error(argv[0], argv[i]);
+        if (!strcmp(argv[i],"-o")){
+            filename.str(std::string());
+            filename << argv[i+1];
+            i++;
+        } else if (!strcmp(argv[i],"-sub")){
+            subflow_count = atoi(argv[i+1]);
+            i++;
+        } else if (!strcmp(argv[i],"-conns")){
+            no_of_conns = atoi(argv[i+1]);
+            cout << "no_of_conns "<<no_of_conns << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-nodes")){
+            no_of_nodes = atoi(argv[i+1]);
+            cout << "no_of_nodes "<<no_of_nodes << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-ssthresh")){
+            ssthresh = atoi(argv[i+1]);
+            cout << "ssthresh "<< ssthresh << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-q")){
+            queuesize = memFromPkt(atoi(argv[i+1]));
+            cout << "queuesize "<<queuesize << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-fail")){
+            failed_links = atoi(argv[i+1]);
+            cout << "failed_links "<<failed_links << endl;
+            i++;
+        } else if (!strcmp(argv[i], "UNCOUPLED"))
+            algo = UNCOUPLED;
+        else if (!strcmp(argv[i], "COUPLED_INC"))
+            algo = COUPLED_INC;
+        else if (!strcmp(argv[i], "FULLY_COUPLED"))
+            algo = FULLY_COUPLED;
+        else if (!strcmp(argv[i], "COUPLED_TCP"))
+            algo = COUPLED_TCP;
+        else if (!strcmp(argv[i], "COUPLED_SCALABLE_TCP"))
+            algo = COUPLED_SCALABLE_TCP;
+        else if (!strcmp(argv[i], "COUPLED_EPSILON")) {
+            algo = COUPLED_EPSILON;
+            if (argc > i+1){
+                epsilon = atof(argv[i+1]);
+                i++;
+            }
+            printf("Using epsilon %f\n", epsilon);
+        } else
+            exit_error(argv[0], argv[i]);
 
-	i++;
+        i++;
     }
     srand(time(NULL));
-      
+
     cout << "Using subflow count " << subflow_count <<endl;
-      
+
     cout <<  "Using algo="<<algo<< " epsilon=" << epsilon << endl;
     // prepare the loggers
 
     cout << "Logging to " << filename.str() << endl;
-    //Logfile 
+    //Logfile
     Logfile logfile(filename.str(), eventlist);
 
 #if PRINT_PATHS
@@ -149,8 +149,8 @@ int main(int argc, char **argv) {
     cout << "Logging path choices to " << filename.str() << endl;
     std::ofstream paths(filename.str().c_str());
     if (!paths){
-	cout << "Can't open for writing paths file!"<<endl;
-	exit(1);
+        cout << "Can't open for writing paths file!"<<endl;
+        exit(1);
     }
 #endif
 
@@ -173,18 +173,18 @@ int main(int argc, char **argv) {
     double extrastarttime;
 
     TcpRtxTimerScanner tcpRtxScanner(timeFromMs(10), eventlist);
-   
+
     int dest;
 
 #if USE_FIRST_FIT
     if (subflow_count==1){
-	ff = new FirstFit(timeFromMs(FIRST_FIT_INTERVAL),eventlist);
+        ff = new FirstFit(timeFromMs(FIRST_FIT_INTERVAL),eventlist);
     }
 #endif
 
 #ifdef FAT_TREE
-    FatTreeTopology* top = new FatTreeTopology(no_of_nodes, queuesize, &logfile, 
-					       &eventlist,ff,RANDOM,failed_links);
+    FatTreeTopology* top = new FatTreeTopology(no_of_nodes, queuesize, &logfile,
+                                               &eventlist,ff,RANDOM,failed_links);
 #endif
 
 #ifdef OV_FAT_TREE
@@ -212,26 +212,26 @@ int main(int argc, char **argv) {
     net_paths = new vector<const Route*>**[no_of_nodes];
 
     int* is_dest = new int[no_of_nodes];
-    
+
     for (int i=0;i<no_of_nodes;i++){
-	is_dest[i] = 0;
-	net_paths[i] = new vector<const Route*>*[no_of_nodes];
-	for (int j = 0;j<no_of_nodes;j++)
-	    net_paths[i][j] = NULL;
+        is_dest[i] = 0;
+        net_paths[i] = new vector<const Route*>*[no_of_nodes];
+        for (int j = 0;j<no_of_nodes;j++)
+            net_paths[i][j] = NULL;
     }
-    
+
 #if USE_FIRST_FIT
     if (ff)
-	ff->net_paths = net_paths;
+        ff->net_paths = net_paths;
 #endif
-    
+
     vector<int>* destinations;
 
     // Permutation connections
     ConnectionMatrix* conns = new ConnectionMatrix(no_of_nodes);
     //conns->setLocalTraffic(top);
 
-    
+
     cout << "Running perm with " << no_of_conns << " connections" << endl;
     conns->setPermutation(no_of_conns);
     //conns->setIncast(no_of_conns,10);
@@ -248,199 +248,199 @@ int main(int argc, char **argv) {
 
     // used just to print out stats data at the end
     list <const Route*> routes;
-    
+
     int connID = 0;
     for (it = conns->connections.begin(); it!=conns->connections.end();it++){
-	int src = (*it).first;
-	destinations = (vector<int>*)(*it).second;
+        int src = (*it).first;
+        destinations = (vector<int>*)(*it).second;
 
-	vector<int> subflows_chosen;
-      
-	for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
-	    connID++;
-	    dest = destinations->at(dst_id);
-	    if (!net_paths[src][dest]) {
-		vector<const Route*>* paths = top->get_paths(src,dest);
-		net_paths[src][dest] = paths;
-		for (unsigned int i = 0; i < paths->size(); i++) {
-		    routes.push_back((*paths)[i]);
-		}
-	    }
-	    if (!net_paths[dest][src]) {
-		vector<const Route*>* paths = top->get_paths(dest,src);
-		net_paths[dest][src] = paths;
-	    }
+        vector<int> subflows_chosen;
 
-	    MultipathTcpSrc* mtcp;
+        for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
+            connID++;
+            dest = destinations->at(dst_id);
+            if (!net_paths[src][dest]) {
+                vector<const Route*>* paths = top->get_paths(src,dest);
+                net_paths[src][dest] = paths;
+                for (unsigned int i = 0; i < paths->size(); i++) {
+                    routes.push_back((*paths)[i]);
+                }
+            }
+            if (!net_paths[dest][src]) {
+                vector<const Route*>* paths = top->get_paths(dest,src);
+                net_paths[dest][src] = paths;
+            }
 
-	    for (int connection=0;connection<1;connection++){
-		subflows_chosen.clear();
-		
-		int it_sub;
-		int crt_subflow_count = subflow_count;
+            MultipathTcpSrc* mtcp;
 
-		//		if (connID>1){
-		  mtcp = new MultipathTcpSrc(algo, eventlist, NULL);
-		  //}
-		//else
-		  //{
-		  //crt_subflow_count = 1;
-		  // mtcp = NULL;
-		  //}
-		
-		tot_subs += crt_subflow_count;
-		cnt_con ++;
-		    
-		it_sub = crt_subflow_count > net_paths[src][dest]->size()?net_paths[src][dest]->size():crt_subflow_count;
-		for (int inter = 0; inter < it_sub; inter++) {
+            for (int connection=0;connection<1;connection++){
+                subflows_chosen.clear();
 
-		    //if (connID==1){
-		    //cout << "Creating SRC transfer " << endl;
-		    //tcpSrc = new TcpSrcTransfer(NULL, NULL, eventlist,90000,net_paths[src][dest],NULL);
-		    //tcpSnk = new TcpSinkTransfer();
-		    //}
-		    //else 
-			{
-			tcpSrc = new TcpSrc(NULL, NULL, eventlist);
-			tcpSrc->set_ssthresh(ssthresh*Packet::data_packet_size());
-			tcpSnk = new TcpSink();
-		    }
-		    
-		    tcpSrc->setName("tcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(inter)+")");
-		    logfile.writeName(*tcpSrc);
-		    
-		    tcpSnk->setName("tcp_sink_" + ntoa(src) + "_" + ntoa(dest)+ "("+ntoa(inter)+")");
-		    logfile.writeName(*tcpSnk);
-		    
-		    tcpRtxScanner.registerTcp(*tcpSrc);
-		    
-		    int choice = 0;
-		    
+                int it_sub;
+                int crt_subflow_count = subflow_count;
+
+                //                if (connID>1){
+                  mtcp = new MultipathTcpSrc(algo, eventlist, NULL);
+                  //}
+                //else
+                  //{
+                  //crt_subflow_count = 1;
+                  // mtcp = NULL;
+                  //}
+
+                tot_subs += crt_subflow_count;
+                cnt_con ++;
+
+                it_sub = crt_subflow_count > net_paths[src][dest]->size()?net_paths[src][dest]->size():crt_subflow_count;
+                for (int inter = 0; inter < it_sub; inter++) {
+
+                    //if (connID==1){
+                    //cout << "Creating SRC transfer " << endl;
+                    //tcpSrc = new TcpSrcTransfer(NULL, NULL, eventlist,90000,net_paths[src][dest],NULL);
+                    //tcpSnk = new TcpSinkTransfer();
+                    //}
+                    //else
+                        {
+                        tcpSrc = new TcpSrc(NULL, NULL, eventlist);
+                        tcpSrc->set_ssthresh(ssthresh*Packet::data_packet_size());
+                        tcpSnk = new TcpSink();
+                    }
+
+                    tcpSrc->setName("tcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(inter)+")");
+                    logfile.writeName(*tcpSrc);
+
+                    tcpSnk->setName("tcp_sink_" + ntoa(src) + "_" + ntoa(dest)+ "("+ntoa(inter)+")");
+                    logfile.writeName(*tcpSnk);
+
+                    tcpRtxScanner.registerTcp(*tcpSrc);
+
+                    int choice = 0;
+
 #ifdef FAT_TREE
-			int exists = 0,tt=0;
-			do {
-			    choice = random()%net_paths[src][dest]->size();
-			    tt++;
-			    for (int rr = 0;rr<subflows_chosen.size();rr++)
-				if (choice==subflows_chosen[rr]){
-				    //cout <<"EG "<<choice<< " " << subflows_chosen[rr] << " tt" << tt << " ";
-				    exists = 1;
-				    break;
-				}
-			}while(exists && tt<1000);
-			
-			subflows_chosen.push_back(choice);
-			
-			if (tt>=1000){
-			    cout << "Max paths "<< net_paths[src][dest]->size()<< " tt is "<<tt<<", chosen:";
-			    for (int rr = 0;rr<subflows_chosen.size();rr++)
-				cout << subflows_chosen[rr] << " "; 
-			    
-			    cout << endl;
-			}
+                        int exists = 0,tt=0;
+                        do {
+                            choice = random()%net_paths[src][dest]->size();
+                            tt++;
+                            for (int rr = 0;rr<subflows_chosen.size();rr++)
+                                if (choice==subflows_chosen[rr]){
+                                    //cout <<"EG "<<choice<< " " << subflows_chosen[rr] << " tt" << tt << " ";
+                                    exists = 1;
+                                    break;
+                                }
+                        }while(exists && tt<1000);
+
+                        subflows_chosen.push_back(choice);
+
+                        if (tt>=1000){
+                            cout << "Max paths "<< net_paths[src][dest]->size()<< " tt is "<<tt<<", chosen:";
+                            for (int rr = 0;rr<subflows_chosen.size();rr++)
+                                cout << subflows_chosen[rr] << " ";
+
+                            cout << endl;
+                        }
 #endif
-	  
+
 #ifdef OV_FAT_TREE
-		    choice = rand()%net_paths[src][dest]->size();
+                    choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+
 #ifdef MH_FAT_TREE
-		    int use_all = it_sub==net_paths[src][dest]->size();
-		    
-		    if (use_all)
-			choice = inter;
-		    else
-			choice = rand()%net_paths[src][dest]->size();
+                    int use_all = it_sub==net_paths[src][dest]->size();
+
+                    if (use_all)
+                        choice = inter;
+                    else
+                        choice = rand()%net_paths[src][dest]->size();
 #endif
-	  
+
 #ifdef VL2
-		    choice = rand()%net_paths[src][dest]->size();
+                    choice = rand()%net_paths[src][dest]->size();
 #endif
-		    
+
 #ifdef STAR
-		    choice = 0;
+                    choice = 0;
 #endif
-	  
+
 #ifdef BCUBE
-		//choice = inter;
-	  
-		    int min = -1, max = -1,minDist = 1000,maxDist = 0;
-		    if (subflow_count==1){
-			//find shortest and longest path 
-			for (int dd=0;dd<net_paths[src][dest]->size();dd++){
-			    if (net_paths[src][dest]->at(dd)->size()<minDist){
-				minDist = net_paths[src][dest]->at(dd)->size();
-				min = dd;
-			    }
-			    if (net_paths[src][dest]->at(dd)->size()>maxDist){
-				maxDist = net_paths[src][dest]->at(dd)->size();
-				max = dd;
-			    }
-			}
-			choice = min;
-		    } 
-		    else
-			choice = rand()%net_paths[src][dest]->size();
-#endif
-		    //cout << "Choice "<<choice<<" out of "<<net_paths[src][dest]->size();
+                //choice = inter;
 
-	  
-		    /*if (net_paths[src][dest]->size()==K*K/4 && it_sub<=K/2){
-		      int choice2 = rand()%(K/2);*/
-	  
-		    if (choice>=net_paths[src][dest]->size()){
-			printf("Weird path choice %d out of %lu\n",choice,net_paths[src][dest]->size());
-			exit(1);
-		    }
-		    
+                    int min = -1, max = -1,minDist = 1000,maxDist = 0;
+                    if (subflow_count==1){
+                        //find shortest and longest path
+                        for (int dd=0;dd<net_paths[src][dest]->size();dd++){
+                            if (net_paths[src][dest]->at(dd)->size()<minDist){
+                                minDist = net_paths[src][dest]->at(dd)->size();
+                                min = dd;
+                            }
+                            if (net_paths[src][dest]->at(dd)->size()>maxDist){
+                                maxDist = net_paths[src][dest]->at(dd)->size();
+                                max = dd;
+                            }
+                        }
+                        choice = min;
+                    }
+                    else
+                        choice = rand()%net_paths[src][dest]->size();
+#endif
+                    //cout << "Choice "<<choice<<" out of "<<net_paths[src][dest]->size();
+
+
+                    /*if (net_paths[src][dest]->size()==K*K/4 && it_sub<=K/2){
+                      int choice2 = rand()%(K/2);*/
+
+                    if (choice>=net_paths[src][dest]->size()){
+                        printf("Weird path choice %d out of %lu\n",choice,net_paths[src][dest]->size());
+                        exit(1);
+                    }
+
 #if PRINT_PATHS
-		    for (int ll=0;ll<net_paths[src][dest]->size();ll++){
-			paths << "Route from "<< ntoa(src) << " to " << ntoa(dest) << "  (" << ll << ") -> " ;
-			print_path(paths,net_paths[src][dest]->at(ll));
-		    }
-		    /*				if (src>=12){
-						assert(net_paths[src][dest]->size()>1);
-						net_paths[src][dest]->erase(net_paths[src][dest]->begin());
-						paths << "Killing entry!" << endl;
-						
-						if (choice>=net_paths[src][dest]->size())
-						choice = 0;
-						}*/
+                    for (int ll=0;ll<net_paths[src][dest]->size();ll++){
+                        paths << "Route from "<< ntoa(src) << " to " << ntoa(dest) << "  (" << ll << ") -> " ;
+                        print_path(paths,net_paths[src][dest]->at(ll));
+                    }
+                    /*                                if (src>=12){
+                                                assert(net_paths[src][dest]->size()>1);
+                                                net_paths[src][dest]->erase(net_paths[src][dest]->begin());
+                                                paths << "Killing entry!" << endl;
+
+                                                if (choice>=net_paths[src][dest]->size())
+                                                choice = 0;
+                                                }*/
 #endif
-		    routeout = new Route(*(net_paths[src][dest]->at(choice)));
-		    routeout->push_back(tcpSnk);
-		    
-		    routein = new Route(*top->get_paths(dest,src)->at(choice));
-		    routein->push_back(tcpSrc);
-		    
-		    extrastarttime = 0 * drand();
-		    
-		    if (mtcp){
-			mtcp->addSubflow(tcpSrc);
-		    
-			if (inter == 0) {
-			    mtcp->setName("multipath" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
-			    logfile.writeName(*mtcp);
-			}
-		    }
-		    
-		    tcpSrc->connect(*routeout, *routein, *tcpSnk, timeFromMs(extrastarttime));
-	  
+                    routeout = new Route(*(net_paths[src][dest]->at(choice)));
+                    routeout->push_back(tcpSnk);
+
+                    routein = new Route(*top->get_paths(dest,src)->at(choice));
+                    routein->push_back(tcpSrc);
+
+                    extrastarttime = 0 * drand();
+
+                    if (mtcp){
+                        mtcp->addSubflow(tcpSrc);
+
+                        if (inter == 0) {
+                            mtcp->setName("multipath" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
+                            logfile.writeName(*mtcp);
+                        }
+                    }
+
+                    tcpSrc->connect(*routeout, *routein, *tcpSnk, timeFromMs(extrastarttime));
+
 #ifdef PACKET_SCATTER
-		    tcpSrc->set_paths(net_paths[src][dest]);
-		    tcpSnk->set_paths(net_paths[dest][src]);
+                    tcpSrc->set_paths(net_paths[src][dest]);
+                    tcpSnk->set_paths(net_paths[dest][src]);
 
-		    cout << "Using PACKET SCATTER!!!!"<<endl;
+                    cout << "Using PACKET SCATTER!!!!"<<endl;
 #endif
 
-	  
-		    //	  if (ff)
-		    //	    ff->add_flow(src,dest,tcpSrc);
-		    
-		    sinkLogger.monitorMultipathSink(tcpSnk);
-		}
-	    }
-	}
+
+                    //          if (ff)
+                    //            ff->add_flow(src,dest,tcpSrc);
+
+                    sinkLogger.monitorMultipathSink(tcpSnk);
+                }
+            }
+        }
     }
     //    ShortFlows* sf = new ShortFlows(2560, eventlist, net_paths,conns,lg, &tcpRtxScanner);
 
@@ -465,29 +465,29 @@ int main(int argc, char **argv) {
     /*    list <const Route*>::iterator rt_i;
     int counts[10]; int hop;
     for (int i = 0; i < 10; i++)
-	counts[i] = 0;
+        counts[i] = 0;
     for (rt_i = routes.begin(); rt_i != routes.end(); rt_i++) {
-	const Route* r = (*rt_i);
-	//print_route(*r);
-	cout << "Path:" << endl;
-	hop = 0;
-	for (int i = 0; i < r->size(); i++) {
-	    PacketSink *ps = (*r)[i]; 
-	    CompositeQueue *q = dynamic_cast<CompositeQueue*>(ps);
-	    if (q == 0) {
-		cout << ps->nodename() << endl;
-	    } else {
-		cout << q->nodename() << " id=" << q->id << " " << q->num_packets() << "pkts " 
-		     << q->num_headers() << "hdrs " << q->num_acks() << "acks " << q->num_nacks() << "nacks " << q->num_stripped() << "stripped"
-		     << endl;
-		counts[hop] += q->num_stripped();
-		hop++;
-	    }
-	} 
-	cout << endl;
+        const Route* r = (*rt_i);
+        //print_route(*r);
+        cout << "Path:" << endl;
+        hop = 0;
+        for (int i = 0; i < r->size(); i++) {
+            PacketSink *ps = (*r)[i];
+            CompositeQueue *q = dynamic_cast<CompositeQueue*>(ps);
+            if (q == 0) {
+                cout << ps->nodename() << endl;
+            } else {
+                cout << q->nodename() << " id=" << q->id << " " << q->num_packets() << "pkts "
+                     << q->num_headers() << "hdrs " << q->num_acks() << "acks " << q->num_nacks() << "nacks " << q->num_stripped() << "stripped"
+                     << endl;
+                counts[hop] += q->num_stripped();
+                hop++;
+            }
+        }
+        cout << endl;
     }
     for (int i = 0; i < 10; i++)
-	cout << "Hop " << i << " Count " << counts[i] << endl;
+        cout << "Hop " << i << " Count " << counts[i] << endl;
     */
 }
 

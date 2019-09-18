@@ -32,8 +32,8 @@ struct multipath_flow_entry {
 class SubflowControl: public EventSource{
  public:
   SubflowControl(simtime_picosec scanPeriod, Logfile* lg, SinkLoggerSampling* sl,
-		 EventList& eventlist, TcpRtxTimerScanner* rtx, vector<const Route*>*** np, 
-		 std::ofstream* p,int max_subflows);
+                 EventList& eventlist, TcpRtxTimerScanner* rtx, vector<const Route*>*** np, 
+                 std::ofstream* p,int max_subflows);
   void doNextEvent();
 
   void init();

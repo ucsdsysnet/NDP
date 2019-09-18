@@ -76,14 +76,14 @@ void VL2Topology::init_network(){
             logfile->writeName(*(pipes_ns_nt[k][j]));
 
 #if PRINT_TOPOLOGY    
-	    topology << HOST_ID(k,j) <<" "<< TOR_ID(j) << " "<<1 << endl;
-	    topology << TOR_ID(j) << " "<<HOST_ID(k,j) << " "<<1 << endl;
+            topology << HOST_ID(k,j) <<" "<< TOR_ID(j) << " "<<1 << endl;
+            topology << TOR_ID(j) << " "<<HOST_ID(k,j) << " "<<1 << endl;
 #endif
 
-	    if (ff){
-	      ff->add_queue(queues_nt_ns[j][k]);
-	      ff->add_queue(queues_ns_nt[k][j]);
-	    }
+            if (ff){
+              ff->add_queue(queues_nt_ns[j][k]);
+              ff->add_queue(queues_ns_nt[k][j]);
+            }
         }
     }
 
@@ -91,43 +91,43 @@ void VL2Topology::init_network(){
     for (int j = 0; j < NT; j++) {
         //Connect the ToR switch to NT2A aggregation switches
         for (int l=0; l<NT2A;l++){
-	  int k;
-	  if (l==0)
+          int k;
+          if (l==0)
             k = TOR_AGG1(j);
-	  else 
-	    k = TOR_AGG2(j);
+          else 
+            k = TOR_AGG2(j);
 
-	  // Downlink
-	  queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
-	  logfile->addLogger(*queueLogger);
-	  queues_na_nt[k][j] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
-	  queues_na_nt[k][j]->setName("Queue-na-nt-" + ntoa(k) + "-" + ntoa(j));
-	  logfile->writeName(*(queues_na_nt[k][j]));
-	  
+          // Downlink
+          queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
+          logfile->addLogger(*queueLogger);
+          queues_na_nt[k][j] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
+          queues_na_nt[k][j]->setName("Queue-na-nt-" + ntoa(k) + "-" + ntoa(j));
+          logfile->writeName(*(queues_na_nt[k][j]));
+          
 
-	  pipes_na_nt[k][j] = new Pipe(timeFromUs(RTT), *eventlist);
-	  pipes_na_nt[k][j]->setName("Pipe-na-nt-" + ntoa(k) + "-" + ntoa(j));
-	  logfile->writeName(*(pipes_na_nt[k][j]));
-	  
-	  // Uplink
-	  queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
-	  logfile->addLogger(*queueLogger);
-	  queues_nt_na[j][k] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
-	  queues_nt_na[j][k]->setName("Queue-nt-na-" + ntoa(j) + "-" + ntoa(k));
-	  logfile->writeName(*(queues_nt_na[j][k]));
-	  
-	  pipes_nt_na[j][k] = new Pipe(timeFromUs(RTT), *eventlist);
-	  pipes_nt_na[j][k]->setName("Pipe-nt-na-" + ntoa(j) + "-" + ntoa(k));
-	  logfile->writeName(*(pipes_nt_na[j][k]));
+          pipes_na_nt[k][j] = new Pipe(timeFromUs(RTT), *eventlist);
+          pipes_na_nt[k][j]->setName("Pipe-na-nt-" + ntoa(k) + "-" + ntoa(j));
+          logfile->writeName(*(pipes_na_nt[k][j]));
+          
+          // Uplink
+          queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
+          logfile->addLogger(*queueLogger);
+          queues_nt_na[j][k] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
+          queues_nt_na[j][k]->setName("Queue-nt-na-" + ntoa(j) + "-" + ntoa(k));
+          logfile->writeName(*(queues_nt_na[j][k]));
+          
+          pipes_nt_na[j][k] = new Pipe(timeFromUs(RTT), *eventlist);
+          pipes_nt_na[j][k]->setName("Pipe-nt-na-" + ntoa(j) + "-" + ntoa(k));
+          logfile->writeName(*(pipes_nt_na[j][k]));
 
 #if PRINT_TOPOLOGY    
-	  topology << AGG_ID(k) << " "<<TOR_ID(j) << " "<< 2 << endl;
-	  topology << TOR_ID(j) << " "<<AGG_ID(k) << " "<< 2 << endl;
+          topology << AGG_ID(k) << " "<<TOR_ID(j) << " "<< 2 << endl;
+          topology << TOR_ID(j) << " "<<AGG_ID(k) << " "<< 2 << endl;
 #endif
-	  if (ff){
-	    ff->add_queue(queues_nt_na[j][k]);
-	    ff->add_queue(queues_na_nt[k][j]);
-	  }
+          if (ff){
+            ff->add_queue(queues_nt_na[j][k]);
+            ff->add_queue(queues_na_nt[k][j]);
+          }
         }
     }
     
@@ -135,43 +135,43 @@ void VL2Topology::init_network(){
 
     for (int j = 0; j < NI; j++) {
         for (int k = 0; k < NA; k++) {
-	  // Downlink
-	  queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
-	  logfile->addLogger(*queueLogger);
+          // Downlink
+          queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
+          logfile->addLogger(*queueLogger);
 
-	  queues_ni_na[j][k] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
-	  queues_ni_na[j][k]->setName("Queue-ni-na-" + ntoa(j) + "-" + ntoa(k));
+          queues_ni_na[j][k] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
+          queues_ni_na[j][k]->setName("Queue-ni-na-" + ntoa(j) + "-" + ntoa(k));
 
-	  //	  if (j==0)
-	  //queues_ni_na[j][k]->set_packet_loss_rate(0);
+          //	  if (j==0)
+          //queues_ni_na[j][k]->set_packet_loss_rate(0);
 
-	  logfile->writeName(*(queues_ni_na[j][k]));
-	  
-	  pipes_ni_na[j][k] = new Pipe(timeFromUs(RTT), *eventlist);
-	  pipes_ni_na[j][k]->setName("Pipe-ni-na-" + ntoa(j) + "-" + ntoa(k));
-	  logfile->writeName(*(pipes_ni_na[j][k]));
-	  
-	  // Uplink
+          logfile->writeName(*(queues_ni_na[j][k]));
+          
+          pipes_ni_na[j][k] = new Pipe(timeFromUs(RTT), *eventlist);
+          pipes_ni_na[j][k]->setName("Pipe-ni-na-" + ntoa(j) + "-" + ntoa(k));
+          logfile->writeName(*(pipes_ni_na[j][k]));
+          
+          // Uplink
 
-	  queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
-	  logfile->addLogger(*queueLogger);
+          queueLogger = new QueueLoggerSampling(timeFromMs(1000), *eventlist);
+          logfile->addLogger(*queueLogger);
 
-	  queues_na_ni[k][j] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
-	  queues_na_ni[k][j]->setName("Queue-na-ni-" + ntoa(k) + "-" + ntoa(j));
-	  logfile->writeName(*(queues_na_ni[k][j]));
+          queues_na_ni[k][j] = new RandomQueue(speedFromPktps(CORE_TO_HOST*HOST_NIC), memFromPkt(SWITCH_BUFFER + RANDOM_BUFFER), *eventlist, queueLogger, memFromPkt(RANDOM_BUFFER));
+          queues_na_ni[k][j]->setName("Queue-na-ni-" + ntoa(k) + "-" + ntoa(j));
+          logfile->writeName(*(queues_na_ni[k][j]));
 
-	  pipes_na_ni[k][j] = new Pipe(timeFromUs(RTT), *eventlist);
-	  pipes_na_ni[k][j]->setName("Pipe-na-ni-" + ntoa(k) + "-" + ntoa(j));
-	  logfile->writeName(*(pipes_na_ni[k][j]));
+          pipes_na_ni[k][j] = new Pipe(timeFromUs(RTT), *eventlist);
+          pipes_na_ni[k][j]->setName("Pipe-na-ni-" + ntoa(k) + "-" + ntoa(j));
+          logfile->writeName(*(pipes_na_ni[k][j]));
 
 #if PRINT_TOPOLOGY    
-	  topology << AGG_ID(k) << " " <<INT_ID(j) << " "<<1 << endl;
-	  topology << INT_ID(j) << " " <<AGG_ID(k) << " "<<1 << endl;
+          topology << AGG_ID(k) << " " <<INT_ID(j) << " "<<1 << endl;
+          topology << INT_ID(j) << " " <<AGG_ID(k) << " "<<1 << endl;
 #endif 
-	    if (ff){
-	      ff->add_queue(queues_ni_na[j][k]);
-	      ff->add_queue(queues_na_ni[k][j]);
-	    }
+            if (ff){
+              ff->add_queue(queues_ni_na[j][k]);
+              ff->add_queue(queues_na_ni[k][j]);
+            }
        }
     }
 }

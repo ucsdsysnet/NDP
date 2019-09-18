@@ -4,7 +4,7 @@
 #include <iostream>
 
 RandomQueue::RandomQueue(linkspeed_bps bitrate, mem_b maxsize, 
-			 EventList& eventlist, QueueLogger* logger, mem_b drop)
+                         EventList& eventlist, QueueLogger* logger, mem_b drop)
     : Queue(bitrate,maxsize,eventlist,logger), 
       _drop(drop),
       _buffer_drops(0)
@@ -24,29 +24,29 @@ RandomQueue::receivePacket(Packet& pkt)
     int crt = _queuesize + pkt.size();
 
     if (_plr > 0.0 && drand() < _plr){
-	//if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
-	//pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_DROP);
-	pkt.free();
-	return;
+        //if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
+        //pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_DROP);
+        pkt.free();
+        return;
     }
 
     if (crt > _drop_th)
-	drop_prob = 1100.0/_drop_th;
+        drop_prob = 1100.0/_drop_th;
   
     //  cout << "Drop Prob "<<drop_prob<< " queue size "<< _queuesize/1000 << " queue id " << id << endl;
 
     if (crt > _maxsize || drand() < drop_prob) {
-	/* drop the packet */
-	if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
-	pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_DROP);
-	if (crt > _maxsize){
-	    _buffer_drops ++;
-	}
-	pkt.free();
+        /* drop the packet */
+        if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
+        pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_DROP);
+        if (crt > _maxsize){
+            _buffer_drops ++;
+        }
+        pkt.free();
 
-	//cout << "Drop "<<drop_prob<< " queue size "<< _queuesize/1000 << " queue id " << _name << endl;
+        //cout << "Drop "<<drop_prob<< " queue size "<< _queuesize/1000 << " queue id " << _name << endl;
 
-	return;
+        return;
     }
 
     /* enqueue the packet */
@@ -56,11 +56,11 @@ RandomQueue::receivePacket(Packet& pkt)
     _queuesize += pkt.size();
 
     if (_logger) 
-	_logger->logQueue(*this, QueueLogger::PKT_ENQUEUE, pkt);
+        _logger->logQueue(*this, QueueLogger::PKT_ENQUEUE, pkt);
 
     if (queueWasEmpty) {
-	/* schedule the dequeue event */
-	assert(_enqueued.size()==1);
-	beginService();
+        /* schedule the dequeue event */
+        assert(_enqueued.size()==1);
+        beginService();
     }
 }

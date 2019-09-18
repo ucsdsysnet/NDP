@@ -25,13 +25,13 @@ class QcnPacket : public Packet {
 public:
   typedef uint32_t seq_t;
   inline static QcnPacket* newpkt(PacketFlow &flow, route_t &route, routes_t &routesback, PacketSink &reactor, int size, seq_t seqno) {
-	QcnPacket* p = _packetdb.allocPacket();
-	p->set_route(flow,route,size,seqno);
-	p->_seqno = seqno;
-	p->_reactor = &reactor;
-	p->_routesback = &routesback;
-	return p;
-	}
+        QcnPacket* p = _packetdb.allocPacket();
+        p->set_route(flow,route,size,seqno);
+        p->_seqno = seqno;
+        p->_reactor = &reactor;
+        p->_routesback = &routesback;
+        return p;
+        }
 
   virtual ~QcnPacket(){};
   void free() {_packetdb.freePacket(this);}
@@ -48,24 +48,24 @@ friend class QcnReactor;
 public:
   typedef double fb_t;
   inline static QcnAck* newpkt(QcnPacket &datapkt, fb_t fb) {
-	QcnAck* p = _packetdb.allocPacket();
-	assert(datapkt._nexthop>=1);
-	route_t* routeback = (*datapkt._routesback)[datapkt._nexthop-1];
-	p->set_route(*datapkt._flow, *routeback, QcnAck::ACK_SIZE, datapkt._seqno);
-	p->_reactor = datapkt._reactor;
-	p->_fb = fb;
-	return p;
-	}
+        QcnAck* p = _packetdb.allocPacket();
+        assert(datapkt._nexthop>=1);
+        route_t* routeback = (*datapkt._routesback)[datapkt._nexthop-1];
+        p->set_route(*datapkt._flow, *routeback, QcnAck::ACK_SIZE, datapkt._seqno);
+        p->_reactor = datapkt._reactor;
+        p->_fb = fb;
+        return p;
+        }
   virtual ~QcnAck(){};
   void free() {_packetdb.freePacket(this);}
   const static int ACK_SIZE;
   PacketSink* sendOn() { 
-	assert(_nexthop<=_route->size());
-	PacketSink* nextsink;
-	if (_nexthop==_route->size()) nextsink=_reactor; else nextsink=(*_route).at(_nexthop);
-	_nexthop++;
-	nextsink->receivePacket(*this);
-	return nextsink;
+        assert(_nexthop<=_route->size());
+        PacketSink* nextsink;
+        if (_nexthop==_route->size()) nextsink=_reactor; else nextsink=(*_route).at(_nexthop);
+        _nexthop++;
+        nextsink->receivePacket(*this);
+        return nextsink;
   }
 protected:
   static PacketDB<QcnAck> _packetdb;
@@ -75,35 +75,35 @@ protected:
 
 class QcnReactor : public PacketSink, public EventSource {
 public:
-	QcnReactor(QcnLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
-	void connect(route_t& route, routes_t& routesback, simtime_picosec startTime, linkspeed_bps linkspeed);
-	void doNextEvent();
-	void receivePacket(Packet& pkt);
-	const static double GAIN;
-	const static int CYCLESOFRECOVERY;
-	const static int PACKETSPERRECOVERYCYCLE;
-	const static linkspeed_bps RATEINCREASE;
-	const static linkspeed_bps MINRATE;
-	// State (should be private, but make it public so the loggers can access it)
-	int _packetCycles;
-	int _timerCycles;
-	double _currentRate;
-	double _targetRate;
-	linkspeed_bps _linkspeed;
-	int _packetsSentInCurrentCycle;
+        QcnReactor(QcnLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
+        void connect(route_t& route, routes_t& routesback, simtime_picosec startTime, linkspeed_bps linkspeed);
+        void doNextEvent();
+        void receivePacket(Packet& pkt);
+        const static double GAIN;
+        const static int CYCLESOFRECOVERY;
+        const static int PACKETSPERRECOVERYCYCLE;
+        const static linkspeed_bps RATEINCREASE;
+        const static linkspeed_bps MINRATE;
+        // State (should be private, but make it public so the loggers can access it)
+        int _packetCycles;
+        int _timerCycles;
+        double _currentRate;
+        double _targetRate;
+        linkspeed_bps _linkspeed;
+        int _packetsSentInCurrentCycle;
 private:
-	// Housekeeping
-	QcnLogger* _logger;
-	//TrafficLogger* _pktlogger;
-	// Connectivity
-	PacketFlow _flow;
-	route_t* _route;
-	routes_t* _routesback;
-	QcnPacket::seq_t _seqno;
-	// Mechanism
-	void onFeedback(double fb);
-	void onPacketSent();
-	};
+        // Housekeeping
+        QcnLogger* _logger;
+        //TrafficLogger* _pktlogger;
+        // Connectivity
+        PacketFlow _flow;
+        route_t* _route;
+        routes_t* _routesback;
+        QcnPacket::seq_t _seqno;
+        // Mechanism
+        void onFeedback(double fb);
+        void onPacketSent();
+        };
 
 class QcnEndpoint : public PacketSink {
   virtual void receivePacket(Packet& pkt);

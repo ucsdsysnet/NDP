@@ -49,7 +49,7 @@ void ConnectionMatrix::setPermutation(int conn, int rack_size){
   for (i = 0;i<conn;i++){
     if (!perm_tmp.size())
       for (int q=0;q<N;q++){
-	perm_tmp.push_back(q);
+        perm_tmp.push_back(q);
       }
 
     pos = rand()%perm_tmp.size();
@@ -93,9 +93,9 @@ void ConnectionMatrix::setPermutation(){
     int r = rand()%(N-src);
     for (dest = 0;dest<N;dest++){
       if (r==0&&!is_dest[dest])
-	break;
+        break;
       if (!is_dest[dest])
-	r--;
+        r--;
     }
 
     if (r!=0||is_dest[dest]){
@@ -106,13 +106,13 @@ void ConnectionMatrix::setPermutation(){
     if (src==dest){
       //find first other destination that is different!
       do {
-	dest = (dest+1)%N;
+        dest = (dest+1)%N;
       }
       while (is_dest[dest]);
-	
+        
       if (src==dest){
-	printf("Wrong connections 2!\n");
-	exit(1);
+        printf("Wrong connections 2!\n");
+        exit(1);
       }
     }
     is_dest[dest] = 1;
@@ -179,8 +179,8 @@ void ConnectionMatrix::setVL2(){
     for (int i = 0;i<crt;i++){
       int dest = rand()%N;
       if (src==dest){
-	i--;
-	continue;
+        i--;
+        continue;
       }
       connections[src]->push_back(dest);
     }
@@ -243,10 +243,10 @@ void ConnectionMatrix::setStaggeredPermutation(Topology* top,double local){
     if (v<local){
       i = 0;
       do {
-	found = 0;
-	dest = neighbours->at(rand()%neighbours->size());
-	if (is_dest[dest])
-	  found = 1;
+        found = 0;
+        dest = neighbours->at(rand()%neighbours->size());
+        if (is_dest[dest])
+          found = 1;
       }
       while (found && i++<15);
     }
@@ -254,7 +254,7 @@ void ConnectionMatrix::setStaggeredPermutation(Topology* top,double local){
     if (v>=local || (v<local&&found)){
       dest = rand()%N;
       while (is_dest[dest])
-	dest = (dest+1)%N;
+        dest = (dest+1)%N;
     }
 
     assert(dest>=0&&dest<N);
@@ -275,10 +275,10 @@ void ConnectionMatrix::setManytoMany(int c){
       t = rand()%N;
       f = 0;
       for (j=0;j<hosts.size();j++)
-	if (hosts[j]==t){
-	  f = 1;
-	  break;
-	}
+        if (hosts[j]==t){
+          f = 1;
+          break;
+        }
     }while(f);
 
     hosts.push_back(t);
@@ -288,7 +288,7 @@ void ConnectionMatrix::setManytoMany(int c){
     connections[hosts[i]] = new vector<int>();
     for (j=0;j<hosts.size();j++){
       if (i==j)
-	continue;
+        continue;
       connections[hosts[i]]->push_back(hosts[j]);
     }
   }
@@ -312,16 +312,16 @@ void ConnectionMatrix::setHotspot(int hosts_per_hotspot, int count){
     
     for (int i=0;i<hosts_per_hotspot;i++){
       do{
-	if (hosts_per_hotspot==N)
-	  src = i;
-	else
-	  src = rand()%N;
+        if (hosts_per_hotspot==N)
+          src = i;
+        else
+          src = rand()%N;
       }
       while(is_done[src]);
       is_done[src]=1;
 
       if (connections.find(src)==connections.end())      
-	connections[src] = new vector<int>();
+        connections[src] = new vector<int>();
 
       connections[src]->push_back(first);
       is_done[src] = 1;
@@ -396,9 +396,9 @@ void ConnectionMatrix::setHotspot(int hosts){
     int r = rand()%(N-src);
     for (dest = 0;dest<N;dest++){
       if (r==0&&!is_dest[dest])
-	break;
+        break;
       if (!is_dest[dest])
-	r--;
+        r--;
     }
 
     if (r!=0||is_dest[dest]){
@@ -409,13 +409,13 @@ void ConnectionMatrix::setHotspot(int hosts){
     if (src==dest){
       //find first other destination that is different!
       do {
-	dest = (dest+1)%N;
+        dest = (dest+1)%N;
       }
       while (is_dest[dest]);
-	
+        
       if (src==dest){
-	printf("Wrong connections 2!\n");
-	exit(1);
+        printf("Wrong connections 2!\n");
+        exit(1);
       }
     }
     is_dest[dest] = 1;

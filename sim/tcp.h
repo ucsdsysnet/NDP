@@ -32,10 +32,10 @@ class TcpSrc : public PacketSink, public EventSource {
     TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
     uint32_t get_id(){ return id;}
     virtual void connect(const Route& routeout, const Route& routeback, 
-			 TcpSink& sink, simtime_picosec startTime);
+                         TcpSink& sink, simtime_picosec startTime);
     void startflow();
     inline void joinMultipathConnection(MultipathTcpSrc* multipathSrc) {
-	_mSrc = multipathSrc;
+        _mSrc = multipathSrc;
     };
 
     void doNextEvent();
@@ -44,8 +44,8 @@ class TcpSrc : public PacketSink, public EventSource {
     void replace_route(const Route* newroute);
 
     void set_flowsize(uint64_t flow_size_in_bytes) {
-	_flow_size = flow_size_in_bytes+_mss;
-	cout << "Setting flow size to " << _flow_size << endl;
+        _flow_size = flow_size_in_bytes+_mss;
+        cout << "Setting flow size to " << _flow_size << endl;
     }
 
     void set_ssthresh(uint64_t s){_ssthresh = s;}
@@ -103,7 +103,7 @@ class TcpSrc : public PacketSink, public EventSource {
 #endif
     void send_packets();
 
-	
+        
 #ifdef MODEL_RECEIVE_WINDOW
     SentPackets _sent_packets;
     uint64_t _highest_data_seq;
@@ -141,7 +141,7 @@ class TcpSink : public PacketSink, public DataReceiver, public Logged {
     TcpSink();
 
     inline void joinMultipathConnection(MultipathTcpSink* multipathSink){
-	_mSink = multipathSink;
+        _mSink = multipathSink;
     };
 
     void receivePacket(Packet& pkt);
@@ -155,7 +155,7 @@ class TcpSink : public PacketSink, public DataReceiver, public Logged {
 
     MultipathTcpSink* _mSink;
     list<TcpAck::seq_t> _received; /* list of packets above a hole, that 
-				      we've received */
+                                      we've received */
 
 #ifdef PACKET_SCATTER
     vector<const Route*>* _paths;

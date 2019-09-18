@@ -18,11 +18,11 @@ class EthPausePacket : public Packet {
     //do not implement PFC; one priority class alone
 
     inline static EthPausePacket* newpkt(unsigned int sleep){
-	EthPausePacket* p = _packetdb.allocPacket();
-	p->_type = ETH_PAUSE;
-	p->_sleepTime = sleep;
-	p->_size = PAUSESIZE;
-	return p;
+        EthPausePacket* p = _packetdb.allocPacket();
+        p->_type = ETH_PAUSE;
+        p->_sleepTime = sleep;
+        p->_size = PAUSESIZE;
+        return p;
     }
   
     void free() {_packetdb.freePacket(this);}

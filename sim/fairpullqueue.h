@@ -22,7 +22,7 @@ class BasePullQueue {
     virtual PullPkt* dequeue() = 0;
     virtual void flush_flow(int32_t flow_id) = 0;
     virtual void set_preferred_flow(int32_t preferred_flow) {
-	_preferred_flow = preferred_flow;
+        _preferred_flow = preferred_flow;
     }
     inline int32_t pull_count() const {return _pull_count;}
     inline bool empty() const {return _pull_count == 0;}

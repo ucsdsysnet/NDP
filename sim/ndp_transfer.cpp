@@ -62,11 +62,11 @@ NdpSrcTransfer::receivePacket(Packet& pkt){
 
     if (_bytes_to_send>0){
       if (_last_acked>=_bytes_to_send){
-	_is_active = false;
+        _is_active = false;
 
-	cout << endl << "Flow " << str() << " " <<  _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
+        cout << endl << "Flow " << str() << " " <<  _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
 
-	reset(generateFlowSize(),1);
+        reset(generateFlowSize(),1);
       }
     }
   }

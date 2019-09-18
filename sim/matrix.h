@@ -83,10 +83,10 @@ inline T Matrix2d<T>::operator()(size_t x, size_t y) const {
 template<typename T>
 Matrix2d<T>::~Matrix2d() {
     if(_auto_delete){
-	for(int i = 0, c = size(); i < c; ++i){
-	    //will do nothing if T isn't a pointer
-	    deletep(_data[i]);
-	}
+        for(int i = 0, c = size(); i < c; ++i){
+            //will do nothing if T isn't a pointer
+            deletep(_data[i]);
+        }
     }
     delete [] _data;
 }
@@ -161,10 +161,10 @@ inline T Matrix3d<T>::operator()(size_t x, size_t y, size_t z) const {
 template<typename T>
 Matrix3d<T>::~Matrix3d() {
     if(_auto_delete){
-	for(int i = 0, c = size(); i < c; ++i){
-	    //will do nothing if T isn't a pointer
-	    deletep(_data[i]);
-	}
+        for(int i = 0, c = size(); i < c; ++i){
+            //will do nothing if T isn't a pointer
+            deletep(_data[i]);
+        }
     }
     delete [] _data;
 }

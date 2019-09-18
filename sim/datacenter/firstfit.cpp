@@ -53,7 +53,7 @@ void FirstFit::run(){
       cout << "R";
       
       for (unsigned int i=1;i<f->route->size()-1;i+=2){
-	path_allocations[(Queue*)f->route->at(i)] -= 1;
+        path_allocations[(Queue*)f->route->at(i)] -= 1;
       }
     }
   }
@@ -77,17 +77,17 @@ void FirstFit::run(){
       int crt_cost;
 
       for (unsigned int p = 0;p<net_paths[f->src][f->dest]->size();p++){
-	const Route* crt_route = net_paths[f->src][f->dest]->at(p);
-	crt_cost = 0;
+        const Route* crt_route = net_paths[f->src][f->dest]->at(p);
+        crt_cost = 0;
 
-	for (unsigned int i=1;i<crt_route->size()-1;i+=2)
-	  if (path_allocations[(Queue*)crt_route->at(i)]>crt_cost)
-	    crt_cost = path_allocations[(Queue*)crt_route->at(i)];
-					
-	if (crt_cost<best_cost){
-	  best_cost = crt_cost;
-	  best_route = p;
-	}
+        for (unsigned int i=1;i<crt_route->size()-1;i+=2)
+          if (path_allocations[(Queue*)crt_route->at(i)]>crt_cost)
+            crt_cost = path_allocations[(Queue*)crt_route->at(i)];
+                                        
+        if (crt_cost<best_cost){
+          best_cost = crt_cost;
+          best_route = p;
+        }
       }
       assert(best_route>-1);
       //set route!
@@ -102,7 +102,7 @@ void FirstFit::run(){
       f->route = new_route;
 
       for (unsigned int i=1;i<tcp->_route->size()-1;i+=2){
-	path_allocations[(Queue*)new_route->at(i)] += 1;
+        path_allocations[(Queue*)new_route->at(i)] += 1;
       }
     }
   }

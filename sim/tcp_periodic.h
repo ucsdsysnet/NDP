@@ -33,7 +33,7 @@ friend class TcpSrcPeriodic;
 public:
         TcpSinkPeriodic();
 
-	void reset();
+        void reset();
 };
 
 #endif

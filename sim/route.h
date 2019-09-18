@@ -26,8 +26,8 @@ class Route {
     void set_reverse(Route* reverse) {_reverse = reverse;}
     inline const Route* reverse() const {return _reverse;}
     void set_path_id(int path_id, int no_of_paths) {
-	_path_id = path_id;
-	_no_of_paths = no_of_paths;
+        _path_id = path_id;
+        _no_of_paths = no_of_paths;
     }
     inline int path_id() const {return _path_id;}
     inline int no_of_paths() const {return _no_of_paths;}

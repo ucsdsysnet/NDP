@@ -12,8 +12,8 @@
 extern int CDF_WEB [];
 
 DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
-			       uint64_t bytes_to_send, vector<const Route*>* p, 
-			       EventSource* stopped) : DCTCPSrc(logger,pktLogger,eventlist)
+                               uint64_t bytes_to_send, vector<const Route*>* p, 
+                               EventSource* stopped) : DCTCPSrc(logger,pktLogger,eventlist)
 {
   _is_active = false;  
   _ssthresh = 0xffffffff;
@@ -74,9 +74,9 @@ DCTCPSrcTransfer::doNextEvent() {
 
     //delete _route;
     if (_paths!=NULL){
-	Route* rt = new Route(*(_paths->at(rand()%_paths->size())));
-	rt->push_back(_sink);
-	_route = rt;
+        Route* rt = new Route(*(_paths->at(rand()%_paths->size())));
+        rt->push_back(_sink);
+        _route = rt;
     }
 
     //should reset route here!
@@ -95,18 +95,18 @@ DCTCPSrcTransfer::receivePacket(Packet& pkt){
       DCTCPSrc::receivePacket(pkt);
 
       if (_bytes_to_send>0){
-	  assert (!_mSrc);
-	  if (_last_acked>=_bytes_to_send){
-	      _is_active = false;
-	      
-	      cout << endl << "Flow " << str() << " " <<_bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
-	      
-	      if (_flow_stopped){
-		  _flow_stopped->doNextEvent();
-	      }
-	      else 
-		  reset(_bytes_to_send,1);
-	  }
+          assert (!_mSrc);
+          if (_last_acked>=_bytes_to_send){
+              _is_active = false;
+              
+              cout << endl << "Flow " << str() << " " <<_bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
+              
+              if (_flow_stopped){
+                  _flow_stopped->doNextEvent();
+              }
+              else 
+                  reset(_bytes_to_send,1);
+          }
       }
   }
   else {

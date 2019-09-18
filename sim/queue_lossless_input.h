@@ -26,8 +26,8 @@ class LosslessInputQueue : public Queue, public VirtualQueue {
     void completedService(Packet& pkt);
 
     virtual void setName(const string& name) {
-	Logged::setName(name); 
-	_nodename += name;
+        Logged::setName(name); 
+        _nodename += name;
     }
     virtual string& nodename() { return _nodename; }
 

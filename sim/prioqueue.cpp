@@ -6,7 +6,7 @@
 #include <sstream>
 
 CtrlPrioQueue::CtrlPrioQueue(linkspeed_bps bitrate, mem_b maxsize, EventList& eventlist, 
-			       QueueLogger* logger)
+                               QueueLogger* logger)
   : Queue(bitrate, maxsize, eventlist, logger)
 {
   _num_packets = 0;
@@ -53,15 +53,15 @@ CtrlPrioQueue::completeService(){
     switch (pkt->type()) {
     case NDPACK:
     case NDPLITEACK:
-	_num_acks++;
-	break;
+        _num_acks++;
+        break;
     case NDPNACK:
-	_num_nacks++;
-	break;
+        _num_nacks++;
+        break;
     case NDPPULL:
     case NDPLITEPULL:
-	_num_pulls++;
-	break;
+        _num_pulls++;
+        break;
     }
   } else {
       assert(0);
@@ -95,22 +95,22 @@ CtrlPrioQueue::getPriority(Packet& pkt) {
     case NDPLITEACK:
     case NDPLITERTS:
     case NDPLITEPULL:
-	prio = Q_HI;
-	break;
+        prio = Q_HI;
+        break;
     case NDP:
-	if (pkt.header_only()) {
-	    prio = Q_HI;
-	} else {
-	    prio = Q_LO;
-	}
-	break;
+        if (pkt.header_only()) {
+            prio = Q_HI;
+        } else {
+            prio = Q_LO;
+        }
+        break;
     case TCP:
     case IP:
     case NDPLITE:
-	prio = Q_LO;
-	break;
+        prio = Q_LO;
+        break;
     default:
-	abort();
+        abort();
     }
     return prio;
 }
@@ -125,56 +125,56 @@ CtrlPrioQueue::receivePacket(Packet& pkt)
 
     switch (prio) {
     case Q_LO:
-	enqueued = &_enqueued_low;
-	queuesize = &_queuesize_low;
-	break;
+        enqueued = &_enqueued_low;
+        queuesize = &_queuesize_low;
+        break;
     case Q_HI:
-	enqueued = &_enqueued_high;
-	queuesize = &_queuesize_high;
-	break;
+        enqueued = &_enqueued_high;
+        queuesize = &_queuesize_high;
+        break;
     default:
-	abort();
+        abort();
     }
 
     if (*queuesize + pkt.size() > _maxsize) {
-	Packet* dropped_pkt = 0;
-	if (drand() < 0.5) {
-	    dropped_pkt = &pkt;
-	    cout << "drop arriving!\n";
-	} else {
-	    cout << "drop last from queue!\n";
-	    dropped_pkt = enqueued->front();
-	    enqueued->pop_front();
-	    *queuesize -= dropped_pkt->size();
-	    enqueued->push_front(&pkt);
-	    *queuesize += pkt.size();
-	}
-	if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, *dropped_pkt);
-	switch (pkt.type()) {
-	case NDPLITERTS:
-	    cout << "RTS dropped ";
-	    break;
-	case NDPLITE:
-	    cout << "Data dropped ";
-	    break;
-	case NDPLITEACK:
-	    cout << "Ack dropped ";
-	    break;
-	default:
-	    abort();
-	}
-	dropped_pkt->flow().logTraffic(*dropped_pkt,*this,TrafficLogger::PKT_DROP);
-	cout << "B[ " << _enqueued_low.size() << " " << enqueued->size() << " ] DROP " 
-	     << dropped_pkt->flow().id << endl;
-	dropped_pkt->free();
-	_num_drops++;
+        Packet* dropped_pkt = 0;
+        if (drand() < 0.5) {
+            dropped_pkt = &pkt;
+            cout << "drop arriving!\n";
+        } else {
+            cout << "drop last from queue!\n";
+            dropped_pkt = enqueued->front();
+            enqueued->pop_front();
+            *queuesize -= dropped_pkt->size();
+            enqueued->push_front(&pkt);
+            *queuesize += pkt.size();
+        }
+        if (_logger) _logger->logQueue(*this, QueueLogger::PKT_DROP, *dropped_pkt);
+        switch (pkt.type()) {
+        case NDPLITERTS:
+            cout << "RTS dropped ";
+            break;
+        case NDPLITE:
+            cout << "Data dropped ";
+            break;
+        case NDPLITEACK:
+            cout << "Ack dropped ";
+            break;
+        default:
+            abort();
+        }
+        dropped_pkt->flow().logTraffic(*dropped_pkt,*this,TrafficLogger::PKT_DROP);
+        cout << "B[ " << _enqueued_low.size() << " " << enqueued->size() << " ] DROP " 
+             << dropped_pkt->flow().id << endl;
+        dropped_pkt->free();
+        _num_drops++;
     } else {
-	enqueued->push_front(&pkt);
-	*queuesize += pkt.size();
+        enqueued->push_front(&pkt);
+        *queuesize += pkt.size();
     }
     
     if (_serv==QUEUE_INVALID) {
-	beginService();
+        beginService();
     }
 }
 

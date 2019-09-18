@@ -19,16 +19,16 @@ template<class PullPkt>
 void
 FifoPullQueue<PullPkt>::enqueue(PullPkt& pkt) {
     if (this->_preferred_flow>=0 && pkt.flow_id() == this->_preferred_flow){
-	//cout << "Got a pkt from the preffered flow " << pull_pkt->flow_id()<<endl;
-	typename list<PullPkt*>::iterator it = _pull_queue.begin();
+        //cout << "Got a pkt from the preffered flow " << pull_pkt->flow_id()<<endl;
+        typename list<PullPkt*>::iterator it = _pull_queue.begin();
 
-	while (it!=_pull_queue.end()&& ((PullPkt*)(*it))->flow_id()==this->_preferred_flow)
-	    it++;
+        while (it!=_pull_queue.end()&& ((PullPkt*)(*it))->flow_id()==this->_preferred_flow)
+            it++;
 
-	_pull_queue.insert(it, &pkt);
+        _pull_queue.insert(it, &pkt);
     } else {
-	printf("Enqueue");
-	_pull_queue.push_front(&pkt);
+        printf("Enqueue");
+        _pull_queue.push_front(&pkt);
     }
     this->_pull_count++;
     assert(this->_pull_count == _pull_queue.size());
@@ -38,8 +38,8 @@ template<class PullPkt>
 PullPkt*
 FifoPullQueue<PullPkt>::dequeue() {
     if (this->_pull_count == 0) {
-	printf("Dequeue empty");
-	return 0;
+        printf("Dequeue empty");
+        return 0;
     }
     printf("Dequeue");
     PullPkt* packet = _pull_queue.back();
@@ -54,14 +54,14 @@ void
 FifoPullQueue<PullPkt>::flush_flow(int32_t flow_id) {
     typename list<PullPkt*>::iterator it = _pull_queue.begin();
     while (it != _pull_queue.end()) {
-	PullPkt* pull = *it;
-	if (pull->flow_id() == flow_id && pull->type() == NDPPULL) {
-	    pull->free();
-	    it = _pull_queue.erase(it);
-	    this->_pull_count--;
-	} else {
-	    it++;
-	}
+        PullPkt* pull = *it;
+        if (pull->flow_id() == flow_id && pull->type() == NDPPULL) {
+            pull->free();
+            it = _pull_queue.erase(it);
+            this->_pull_count--;
+        } else {
+            it++;
+        }
     }
     assert(this->_pull_count == _pull_queue.size());
 }
@@ -77,9 +77,9 @@ void
 FairPullQueue<PullPkt>::enqueue(PullPkt& pkt) {
     list <PullPkt*>* pull_queue;
     if (queue_exists(pkt)) {
-	pull_queue = find_queue(pkt);
+        pull_queue = find_queue(pkt);
     }  else {
-	pull_queue = create_queue(pkt);
+        pull_queue = create_queue(pkt);
     }
     //we add packets to the front,remove them from the back
     pull_queue->push_front(&pkt);
@@ -90,21 +90,21 @@ template<class PullPkt>
 PullPkt* 
 FairPullQueue<PullPkt>::dequeue() {
     if (this->_pull_count == 0)
-	return 0;
+        return 0;
     while (1) {
-	if (_current_queue == _queue_map.end())
-	    _current_queue = _queue_map.begin();
-	list <PullPkt*>* pull_queue = _current_queue->second;
-	_current_queue++;
-	if (!pull_queue->empty()) {
-	    //we add packets to the front,remove them from the back
-	    PullPkt* packet = pull_queue->back();
-	    pull_queue->pop_back();
-	    this->_pull_count--;
-	    return packet;
-	}
-	// there are packets queued, so we'll eventually find a queue
-	// that lets this terminate
+        if (_current_queue == _queue_map.end())
+            _current_queue = _queue_map.begin();
+        list <PullPkt*>* pull_queue = _current_queue->second;
+        _current_queue++;
+        if (!pull_queue->empty()) {
+            //we add packets to the front,remove them from the back
+            PullPkt* packet = pull_queue->back();
+            pull_queue->pop_back();
+            this->_pull_count--;
+            return packet;
+        }
+        // there are packets queued, so we'll eventually find a queue
+        // that lets this terminate
     }
 }
 
@@ -114,16 +114,16 @@ FairPullQueue<PullPkt>::flush_flow(int32_t flow_id) {
     typename map <int32_t, list<PullPkt*>*>::iterator i;
     i = _queue_map.find(flow_id);
     if (i == _queue_map.end())
-	return;
+        return;
     list<PullPkt*>* pull_queue = i->second;
     while (!pull_queue->empty()) {
-	    PullPkt* packet = pull_queue->back();
-	    pull_queue->pop_back();
-	    packet->free();
-	    this->_pull_count--;
+            PullPkt* packet = pull_queue->back();
+            pull_queue->pop_back();
+            packet->free();
+            this->_pull_count--;
     }
     if (_current_queue == i)
-	_current_queue++;
+        _current_queue++;
     _queue_map.erase(i);
 }
 
@@ -133,7 +133,7 @@ FairPullQueue<PullPkt>::queue_exists(const PullPkt& pkt) {
     typename map <int32_t, list<PullPkt*>*>::iterator i;
     i = _queue_map.find(pkt.flow_id());
     if (i == _queue_map.end())
-	return false;
+        return false;
     return true;
 }
 
@@ -143,7 +143,7 @@ FairPullQueue<PullPkt>::find_queue(const PullPkt& pkt) {
     typename map <int32_t, list<PullPkt*>*>::iterator i;
     i = _queue_map.find(pkt.flow_id());
     if (i == _queue_map.end())
-	return 0;
+        return 0;
     return i->second;
 }
 

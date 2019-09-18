@@ -7,7 +7,7 @@
 #include <ios>
 
 RawLogEvent::RawLogEvent(double time, uint32_t type, uint32_t id, uint32_t ev, 
-			 double val1, double val2, double val3) :
+                         double val1, double val2, double val3) :
     _time(time), _type(type), _id(id), _ev(ev - 100*type), _val1(val1), _val2(val2), _val3(val3)
 {
 }
@@ -28,15 +28,15 @@ Logfile::Logfile(const string& filename, EventList& eventlist)
 {
     _logfile = fopen(_logfilename.c_str(), "wbS");
     if (_logfile==NULL) {
-	cerr << "Failed to open logfile " << _logfilename << endl;
-	exit(1);
+        cerr << "Failed to open logfile " << _logfilename << endl;
+        exit(1);
     }
 }
 
 Logfile::~Logfile() {
     if (_logfile != NULL) {
-	fclose(_logfile);
-	transposeLog();
+        fclose(_logfile);
+        transposeLog();
     }
 }
 
@@ -64,7 +64,7 @@ Logfile::setStartTime(simtime_picosec starttime) {
 
 void
 Logfile::writeRecord(uint32_t type, uint32_t id, uint32_t ev, 
-		     double val1, double val2, double val3) {
+                     double val1, double val2, double val3) {
     uint64_t time = _eventlist.now();
     if (time<_starttime) return;
     double time_sec = timeAsSec(time);
@@ -90,54 +90,54 @@ Logfile::transposeLog() {
     FILE* logfile;
     logfile = fopen(_logfilename.c_str(),"rbS");
     if (logfile==NULL) {
-	cerr << "Failed to open logfile " << _logfilename << endl;
-	exit(1);
+        cerr << "Failed to open logfile " << _logfilename << endl;
+        exit(1);
     }
     size_t read;
     double rd;
     uint32_t ri;
     int numread;
     for (numread=0; numread<_numRecords; numread++) {
-	read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
-	timeRec[numread] = rd;
-	read = fread(&ri, sizeof(uint32_t), 1, logfile); if (read<1) break;
-	typeRec[numread] = ri;
-	read = fread(&ri, sizeof(uint32_t), 1, logfile); if (read<1) break;
-	idRec[numread] = ri;
-	read = fread(&ri, sizeof(uint32_t), 1, logfile); if (read<1) break;
-	evRec[numread] = ri + 100*typeRec[numread];
-	read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
-	val1Rec[numread] = rd;
-	read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
-	val2Rec[numread] = rd;
-	read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
-	val3Rec[numread] = rd;
+        read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
+        timeRec[numread] = rd;
+        read = fread(&ri, sizeof(uint32_t), 1, logfile); if (read<1) break;
+        typeRec[numread] = ri;
+        read = fread(&ri, sizeof(uint32_t), 1, logfile); if (read<1) break;
+        idRec[numread] = ri;
+        read = fread(&ri, sizeof(uint32_t), 1, logfile); if (read<1) break;
+        evRec[numread] = ri + 100*typeRec[numread];
+        read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
+        val1Rec[numread] = rd;
+        read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
+        val2Rec[numread] = rd;
+        read = fread(&rd, sizeof(double), 1, logfile); if (read<1) break;
+        val3Rec[numread] = rd;
     }
     fclose(logfile);
     assert(numread==_numRecords);
     _preamble << "# numrecords=" << numread << endl;
     logfile = fopen(_logfilename.c_str(),"wbS");
     if (logfile==0) {
-	cerr << "Failed to open logfile " << _logfilename << endl;
-	exit(1);
+        cerr << "Failed to open logfile " << _logfilename << endl;
+        exit(1);
     }
     while (true) {
-	if (_preamble.peek()==-1) break;
-	char thisLine[1000];
-	_preamble.getline(&thisLine[0],1000);
-	fputs(thisLine, logfile);
-	fputs("\n", logfile);
+        if (_preamble.peek()==-1) break;
+        char thisLine[1000];
+        _preamble.getline(&thisLine[0],1000);
+        fputs(thisLine, logfile);
+        fputs("\n", logfile);
     }
     fputs("# transpose=0\n",logfile);
     fputs("# TRACE\n",logfile);
     for (int i=0; i < numread; i++) {
-	fwrite(&timeRec[i], sizeof(double), 1, logfile);
-	fwrite(&typeRec[i], sizeof(uint32_t), 1, logfile);
-	fwrite(&idRec[i],   sizeof(uint32_t), 1, logfile);
-	fwrite(&evRec[i],   sizeof(uint32_t), 1, logfile);
-	fwrite(&val1Rec[i], sizeof(double), 1, logfile);
-	fwrite(&val2Rec[i], sizeof(double), 1, logfile);
-	fwrite(&val3Rec[i], sizeof(double), 1, logfile);
+        fwrite(&timeRec[i], sizeof(double), 1, logfile);
+        fwrite(&typeRec[i], sizeof(uint32_t), 1, logfile);
+        fwrite(&idRec[i],   sizeof(uint32_t), 1, logfile);
+        fwrite(&evRec[i],   sizeof(uint32_t), 1, logfile);
+        fwrite(&val1Rec[i], sizeof(double), 1, logfile);
+        fwrite(&val2Rec[i], sizeof(double), 1, logfile);
+        fwrite(&val3Rec[i], sizeof(double), 1, logfile);
     }
     fclose(logfile);
     delete[] timeRec;

@@ -13,16 +13,16 @@
 
 class ExoQueue : public PacketSink {
  public:
-	ExoQueue(double loss_rate);
-	void receivePacket(Packet& pkt);
+        ExoQueue(double loss_rate);
+        void receivePacket(Packet& pkt);
 
-	void setLossRate(double l);
+        void setLossRate(double l);
 // should really be private, but loggers want to see
 
-	// Housekeeping
-	double _loss_rate;
-	string _nodename;
+        // Housekeeping
+        double _loss_rate;
+        string _nodename;
 
-	const string& nodename() {return _nodename;};
+        const string& nodename() {return _nodename;};
 };
 #endif

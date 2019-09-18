@@ -17,8 +17,8 @@ uint64_t generateFlowSize(){
 }
 
 TcpSrcTransfer::TcpSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
-			       uint64_t bytes_to_send, vector<const Route*>* p, 
-			       EventSource* stopped) : TcpSrc(logger,pktLogger,eventlist)
+                               uint64_t bytes_to_send, vector<const Route*>* p, 
+                               EventSource* stopped) : TcpSrc(logger,pktLogger,eventlist)
 {
   _is_active = false;  
   _ssthresh = 0xffffffff;
@@ -74,9 +74,9 @@ TcpSrcTransfer::doNextEvent() {
 
     //delete _route;
     if (_paths!=NULL){
-	Route* rt = new Route(*(_paths->at(rand()%_paths->size())));
-	rt->push_back(_sink);
-	_route = rt;
+        Route* rt = new Route(*(_paths->at(rand()%_paths->size())));
+        rt->push_back(_sink);
+        _route = rt;
     }
 
     //should reset route here!
@@ -95,39 +95,39 @@ TcpSrcTransfer::receivePacket(Packet& pkt){
       TcpSrc::receivePacket(pkt);
 
       if (_bytes_to_send>0){
-	  if (!_mSrc && _last_acked>=_bytes_to_send){
-	      _is_active = false;
-	      
-	      cout << endl << "Flow " << _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
-	      
-	      if (_flow_stopped){
-		  _flow_stopped->doNextEvent();
-	      }
-	      else 
-		  reset(_bytes_to_send,1);
-	  }
-	  else if (_mSrc){
-	      if (_last_acked >= _bytes_to_send/_mSrc->_subflows.size() && _mSrc->compute_total_bytes()>=_bytes_to_send){
-		  //log finish time
-		  
-		  cout << endl << "Flow " << _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
-		  
-		  //reset all the subflows, including this one.
-		  int bb = generateFlowSize();
-		  
-		  list<TcpSrc*>::iterator it;
-		  int subflows_to_activate = bb >= 1000000 ? 8:1;
-		  int crt_subflow = 0;
-		  
-		  for (it = _mSrc->_subflows.begin();it!=_mSrc->_subflows.end();it++){
-		      TcpSrc* t = (*it);
-		      TcpSrcTransfer* crt = (TcpSrcTransfer*)t;
-		      crt->_is_active = false;
-		      crt->reset(bb,crt_subflow<subflows_to_activate);
-		      crt_subflow++;
-		  }
-	      }
-	  }
+          if (!_mSrc && _last_acked>=_bytes_to_send){
+              _is_active = false;
+              
+              cout << endl << "Flow " << _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
+              
+              if (_flow_stopped){
+                  _flow_stopped->doNextEvent();
+              }
+              else 
+                  reset(_bytes_to_send,1);
+          }
+          else if (_mSrc){
+              if (_last_acked >= _bytes_to_send/_mSrc->_subflows.size() && _mSrc->compute_total_bytes()>=_bytes_to_send){
+                  //log finish time
+                  
+                  cout << endl << "Flow " << _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
+                  
+                  //reset all the subflows, including this one.
+                  int bb = generateFlowSize();
+                  
+                  list<TcpSrc*>::iterator it;
+                  int subflows_to_activate = bb >= 1000000 ? 8:1;
+                  int crt_subflow = 0;
+                  
+                  for (it = _mSrc->_subflows.begin();it!=_mSrc->_subflows.end();it++){
+                      TcpSrc* t = (*it);
+                      TcpSrcTransfer* crt = (TcpSrcTransfer*)t;
+                      crt->_is_active = false;
+                      crt->reset(bb,crt_subflow<subflows_to_activate);
+                      crt_subflow++;
+                  }
+              }
+          }
       }
   }
   else {

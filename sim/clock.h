@@ -11,11 +11,11 @@
 
 class Clock : public EventSource {
 public:
-	Clock(simtime_picosec period, EventList& eventlist); 
-	void doNextEvent();
+        Clock(simtime_picosec period, EventList& eventlist); 
+        void doNextEvent();
 private:
-	simtime_picosec _period;
-	int _smallticks;
-	};
+        simtime_picosec _period;
+        int _smallticks;
+        };
 
 #endif

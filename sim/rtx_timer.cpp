@@ -66,9 +66,9 @@ void RtxTimer::reschedule_timer(TcpSrc* who,simtime_picosec when){
     simtime_picosec now = _eventList().now(), delta = when-now;
     if (delta>bucket->base) //ok to reschedule here!
       if (bucket->timers.find(who)!=bucket->timers.end()){
-	t = bucket->timers[who];
-	t->when = when;
-	ok = true;
+        t = bucket->timers[who];
+        t->when = when;
+        ok = true;
       }
   }
 
@@ -101,9 +101,9 @@ void RtxTimer::remove_timer(TcpSrc* who){
     for (it = _soon.begin();it!=_soon.end();it++){
       t = _soon[*it];
       if (t->who==who){
-	found = true;
-	_soon.erase(it);
-	break;
+        found = true;
+        _soon.erase(it);
+        break;
       }
     }
     if (!found)

@@ -3,8 +3,8 @@
 #include "fat_tree_topology.h"
 
 SubflowControl::SubflowControl(simtime_picosec scanPeriod, Logfile* lg, SinkLoggerSampling* sl,
-			       EventList& eventlist, TcpRtxTimerScanner* rtx,  
-			       vector<const Route*>*** n, std::ofstream* p, int ms) 
+                               EventList& eventlist, TcpRtxTimerScanner* rtx,  
+                               vector<const Route*>*** n, std::ofstream* p, int ms) 
   : EventSource(eventlist,"SubflowControl"), _scanPeriod(scanPeriod)
 {
   eventlist.sourceIsPendingRel(*this, _scanPeriod);
@@ -67,10 +67,10 @@ void SubflowControl::run(){
       //add new subflow!
       TcpSrc* tcpSrc = new TcpSrc(NULL, NULL, eventlist());
       TcpSink* tcpSnk = new TcpSink();
-	      
+              
       tcpSrc->setName("mtcp_" + ntoa(f->src) + "_" + ntoa(f->subflows->size()) + "_" + ntoa(f->dest));
       logfile->writeName(*tcpSrc);
-	      
+              
       tcpSnk->setName("mtcp_sink_" + ntoa(f->src) + "_" + ntoa(f->subflows->size()) + "_" + ntoa(f->dest));
       logfile->writeName(*tcpSnk);
       
@@ -79,34 +79,34 @@ void SubflowControl::run(){
       int found;
       int choice;
       do {
-	found = 0;
-		
-	if (net_paths[f->src][f->dest]->size()==K*K/4 && f->subflows->size() < K/2){
-	  assert(f->structure->size()==f->subflows->size());
-	  choice = rand()%(K/2);
+        found = 0;
+                
+        if (net_paths[f->src][f->dest]->size()==K*K/4 && f->subflows->size() < K/2){
+          assert(f->structure->size()==f->subflows->size());
+          choice = rand()%(K/2);
 
-	  for (unsigned int cnt = 0;cnt<f->structure->size();cnt++){
-	    if (f->structure->at(cnt)==choice){
-	      found = 1;
-	      break;
-	    }
-	  }
-	}
-	else {
-	  choice = rand()%net_paths[f->src][f->dest]->size();
-	
-	  for (unsigned int cnt = 0;cnt<f->subflows->size();cnt++){
-	    if (f->subflows->at(cnt)==choice){
-	      found = 1;
-	      break;
-	    }
-	  }
-	}
+          for (unsigned int cnt = 0;cnt<f->structure->size();cnt++){
+            if (f->structure->at(cnt)==choice){
+              found = 1;
+              break;
+            }
+          }
+        }
+        else {
+          choice = rand()%net_paths[f->src][f->dest]->size();
+        
+          for (unsigned int cnt = 0;cnt<f->subflows->size();cnt++){
+            if (f->subflows->at(cnt)==choice){
+              found = 1;
+              break;
+            }
+          }
+        }
       }while(found);
 
       if (net_paths[f->src][f->dest]->size()==K*K/4 && f->subflows->size() < K/2){
-	f->structure->push_back(choice);
-	choice = choice * K/2 + rand()%2;
+        f->structure->push_back(choice);
+        choice = choice * K/2 + rand()%2;
       }
 
       f->subflows->push_back(choice);
@@ -115,7 +115,7 @@ void SubflowControl::run(){
 
       Route* routeout = new Route(*(net_paths[f->src][f->dest]->at(choice)));
       routeout->push_back(tcpSnk);
-	      
+              
       Route* routein = new Route();
       routein->push_back(tcpSrc);
       double extrastarttime = timeAsMs(eventlist().now()) + timeAsMs(_scanPeriod) * drand()+1;
@@ -124,12 +124,12 @@ void SubflowControl::run(){
 
       mtcp->addSubflow(tcpSrc);
       tcpSrc->connect(*routeout, *routein, *tcpSnk, timeFromMs(extrastarttime));
-	    
+            
       sinkLogger->monitorSink(tcpSnk);
 
       if (paths){
-	*paths << "Route from "<< ntoa(f->src) << " to " << ntoa(f->dest) << " -> " ;
-	print_path(*paths, routeout);
+        *paths << "Route from "<< ntoa(f->src) << " to " << ntoa(f->dest) << " -> " ;
+        print_path(*paths, routeout);
       }
     }
   }

@@ -9,14 +9,14 @@
 class EventList;
 
 class EventSource : public Logged {
-	public:
-		EventSource(EventList& eventlist, const string& name) : Logged(name), _eventlist(eventlist) {};
-		virtual ~EventSource() {};
-		virtual void doNextEvent() = 0;
-		inline EventList& eventlist() const {return _eventlist;}
-	protected:
-		EventList& _eventlist;
-	};
+        public:
+                EventSource(EventList& eventlist, const string& name) : Logged(name), _eventlist(eventlist) {};
+                virtual ~EventSource() {};
+                virtual void doNextEvent() = 0;
+                inline EventList& eventlist() const {return _eventlist;}
+        protected:
+                EventList& _eventlist;
+        };
 
 class EventList {
 public:
@@ -25,7 +25,7 @@ public:
     bool doNextEvent(); // returns true if it did anything, false if there's nothing to do
     void sourceIsPending(EventSource &src, simtime_picosec when);
     void sourceIsPendingRel(EventSource &src, simtime_picosec timefromnow)
-			{ sourceIsPending(src, now()+timefromnow); }
+                        { sourceIsPending(src, now()+timefromnow); }
     void cancelPendingSource(EventSource &src);
     void reschedulePendingSource(EventSource &src, simtime_picosec when);
     inline simtime_picosec now() const {return _lasteventtime;}

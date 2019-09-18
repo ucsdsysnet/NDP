@@ -16,7 +16,7 @@
 class CutPayloadQueue : public Queue {
  public:
     CutPayloadQueue(linkspeed_bps bitrate, mem_b maxsize, 
-		   EventList &eventlist, QueueLogger* logger);
+                   EventList &eventlist, QueueLogger* logger);
     virtual void receivePacket(Packet& pkt);
     // should really be private, but loggers want to see
     mem_b _threshold;
@@ -28,8 +28,8 @@ class CutPayloadQueue : public Queue {
     int num_pulls() const { return _num_pulls;}
 
     virtual void setName(const string& name) {
-	Logged::setName(name); 
-	_nodename += name;
+        Logged::setName(name); 
+        _nodename += name;
     }
     virtual const string& nodename() { return _nodename; }
 

@@ -56,11 +56,11 @@ void QcnReactor::receivePacket(Packet& pkt) { // i.e. react to feedback
   }
 
 void QcnEndpoint::receivePacket(Packet& pkt)
-	{ 
-	QcnPacket *p = (QcnPacket*)(&pkt);
-	//pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_RCVDESTROY);
-	p->free();
-	};
+        { 
+        QcnPacket *p = (QcnPacket*)(&pkt);
+        //pkt.flow().logTraffic(pkt,*this,TrafficLogger::PKT_RCVDESTROY);
+        p->free();
+        };
 
 QcnQueue::QcnQueue(linkspeed_bps bitrate, mem_b maxsize, EventList &eventlist, QueueLogger* logger, QcnLogger* qcnlogger)
 : Queue(bitrate,maxsize,eventlist,logger), _qcnlogger(qcnlogger)
@@ -83,13 +83,13 @@ void QcnQueue::receivePacket(Packet& pkt) {
 void QcnReactor::onPacketSent() {
   _packetsSentInCurrentCycle++;
    if (_packetsSentInCurrentCycle>=QcnReactor::PACKETSPERRECOVERYCYCLE) {
-	_logger->logQcn(*this,QcnLogger::QCN_INC,_targetRate-_currentRate);
-	_packetCycles++;
-	_packetsSentInCurrentCycle = 0;
-	_targetRate += (double)QcnReactor::RATEINCREASE;
-	_currentRate = (_currentRate+_targetRate)/2;
-	_logger->logQcn(*this,QcnLogger::QCN_INCD,0);
-	}
+        _logger->logQcn(*this,QcnLogger::QCN_INC,_targetRate-_currentRate);
+        _packetCycles++;
+        _packetsSentInCurrentCycle = 0;
+        _targetRate += (double)QcnReactor::RATEINCREASE;
+        _currentRate = (_currentRate+_targetRate)/2;
+        _logger->logQcn(*this,QcnLogger::QCN_INCD,0);
+        }
   }
 
 void QcnReactor::onFeedback(double fb) {
@@ -105,18 +105,18 @@ void QcnReactor::onFeedback(double fb) {
 void QcnQueue::onPacketReceived(QcnPacket &qpkt) {
   _packetsTillNextFeedback--;
   if (_packetsTillNextFeedback<=0) {
-		double fbrange = _targetQueuesize * (1+2*QcnQueue::GAMMA);
-		double fb1 = - (_queuesize-_targetQueuesize) / fbrange;
-		double fb2 = - QcnQueue::GAMMA*(_queuesize-_lastSampledQueuesize) / fbrange;
-		double fb = max(-1,fb1 + fb2);
-		if (fb<0) {
-			_qcnlogger->logQcnQueue(*this,QcnLogger::QCN_FB,fb,fb1,fb2);
-			QcnAck* ack = QcnAck::newpkt(qpkt, (QcnAck::fb_t)fb);
-			ack->sendOn();
-			}
-		else
-			_qcnlogger->logQcnQueue(*this,QcnLogger::QCN_NOFB,fb,fb1,fb2);
-		_lastSampledQueuesize = _queuesize;
-		_packetsTillNextFeedback = 100;
-		}
+                double fbrange = _targetQueuesize * (1+2*QcnQueue::GAMMA);
+                double fb1 = - (_queuesize-_targetQueuesize) / fbrange;
+                double fb2 = - QcnQueue::GAMMA*(_queuesize-_lastSampledQueuesize) / fbrange;
+                double fb = max(-1,fb1 + fb2);
+                if (fb<0) {
+                        _qcnlogger->logQcnQueue(*this,QcnLogger::QCN_FB,fb,fb1,fb2);
+                        QcnAck* ack = QcnAck::newpkt(qpkt, (QcnAck::fb_t)fb);
+                        ack->sendOn();
+                        }
+                else
+                        _qcnlogger->logQcnQueue(*this,QcnLogger::QCN_NOFB,fb,fb1,fb2);
+                _lastSampledQueuesize = _queuesize;
+                _packetsTillNextFeedback = 100;
+                }
   }

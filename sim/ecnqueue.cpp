@@ -6,7 +6,7 @@
 #include <iostream>
 
 ECNQueue::ECNQueue(linkspeed_bps bitrate, mem_b maxsize, 
-			 EventList& eventlist, QueueLogger* logger, mem_b  K)
+                         EventList& eventlist, QueueLogger* logger, mem_b  K)
     : Queue(bitrate,maxsize,eventlist,logger), 
       _K(K)
 {
@@ -19,42 +19,42 @@ ECNQueue::receivePacket(Packet & pkt)
 {
     //is this a PAUSE packet?
     if (pkt.type()==ETH_PAUSE){
-	EthPausePacket* p = (EthPausePacket*)&pkt;
-	
-	if (p->sleepTime()>0){
-	    //remote end is telling us to shut up.
-	    //assert(_state_send == LosslessQueue::READY);
-	    if (queuesize()>0)
-		//we have a packet in flight
-		_state_send = LosslessQueue::PAUSE_RECEIVED;
-	    else
-		_state_send = LosslessQueue::PAUSED;
-	    
-	    //cout << timeAsMs(eventlist().now()) << " " << _name << " PAUSED "<<endl;
-	}
-	else {
-	    //we are allowed to send!
-	    _state_send = LosslessQueue::READY;
-	    //cout << timeAsMs(eventlist().now()) << " " << _name << " GO "<<endl;
-	    
-	    //start transmission if we have packets to send!
-	    if(queuesize()>0)
-		beginService();
-	}
-	
-	pkt.free();
-	return;
+        EthPausePacket* p = (EthPausePacket*)&pkt;
+        
+        if (p->sleepTime()>0){
+            //remote end is telling us to shut up.
+            //assert(_state_send == LosslessQueue::READY);
+            if (queuesize()>0)
+                //we have a packet in flight
+                _state_send = LosslessQueue::PAUSE_RECEIVED;
+            else
+                _state_send = LosslessQueue::PAUSED;
+            
+            //cout << timeAsMs(eventlist().now()) << " " << _name << " PAUSED "<<endl;
+        }
+        else {
+            //we are allowed to send!
+            _state_send = LosslessQueue::READY;
+            //cout << timeAsMs(eventlist().now()) << " " << _name << " GO "<<endl;
+            
+            //start transmission if we have packets to send!
+            if(queuesize()>0)
+                beginService();
+        }
+        
+        pkt.free();
+        return;
     }
 
 
     if (_queuesize+pkt.size() > _maxsize) {
-	/* if the packet doesn't fit in the queue, drop it */
-	if (_logger) 
-	    _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
-	pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_DROP);
-	pkt.free();
-	_num_drops++;
-	return;
+        /* if the packet doesn't fit in the queue, drop it */
+        if (_logger) 
+            _logger->logQueue(*this, QueueLogger::PKT_DROP, pkt);
+        pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_DROP);
+        pkt.free();
+        _num_drops++;
+        return;
     }
     pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_ARRIVE);
 
@@ -69,9 +69,9 @@ ECNQueue::receivePacket(Packet & pkt)
     if (_logger) _logger->logQueue(*this, QueueLogger::PKT_ENQUEUE, pkt);
 
     if (queueWasEmpty && _state_send==LosslessQueue::READY) {
-	/* schedule the dequeue event */
-	assert(_enqueued.size() == 1);
-	beginService();
+        /* schedule the dequeue event */
+        assert(_enqueued.size() == 1);
+        beginService();
     }
     
 }
@@ -85,11 +85,11 @@ ECNQueue::completeService()
     _enqueued.pop_back();
 
     if (_state_send==LosslessQueue::PAUSE_RECEIVED)
-	_state_send = LosslessQueue::PAUSED;
+        _state_send = LosslessQueue::PAUSED;
     
     //mark on deque
     if (_queuesize > _K)
-	  pkt->set_flags(pkt->flags() | ECN_CE);
+          pkt->set_flags(pkt->flags() | ECN_CE);
 
     _queuesize -= pkt->size();
     pkt->flow().logTraffic(*pkt, *this, TrafficLogger::PKT_DEPART);
@@ -99,7 +99,7 @@ ECNQueue::completeService()
     pkt->sendOn();
 
     if (!_enqueued.empty() && _state_send==LosslessQueue::READY) {
-	/* schedule the next dequeue event */
-	beginService();
+        /* schedule the next dequeue event */
+        beginService();
     }
 }

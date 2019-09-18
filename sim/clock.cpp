@@ -14,12 +14,12 @@ void
 Clock::doNextEvent() {
     eventlist().sourceIsPendingRel(*this, _period);
     if (_smallticks<10) {
-	cout << '.' << flush;
-	_smallticks++;
+        cout << '.' << flush;
+        _smallticks++;
     }
     else {
-	cout << '|' << flush;
-	_smallticks=0;
+        cout << '|' << flush;
+        _smallticks=0;
     }
 }
 

@@ -15,7 +15,7 @@
 class ECNQueue : public Queue {
  public:
     ECNQueue(linkspeed_bps bitrate, mem_b maxsize, EventList &eventlist, 
-		QueueLogger* logger, mem_b drop);
+                QueueLogger* logger, mem_b drop);
     void receivePacket(Packet & pkt);
     void completeService();
  private:
