@@ -26,27 +26,27 @@ ShortFlow* ShortFlows::createConnection(int src, int dst, simtime_picosec startt
 
     f->src->setName("sf_" + ntoa(src) + "_" + ntoa(dst)+"("+ntoa(pos)+")");
     logfile->writeName(*(f->src));
-              
+
     f->snk->setName("sf_sink_" + ntoa(src) + "_" + ntoa(dst)+ "("+ntoa(pos)+")");
     logfile->writeName(*(f->snk));
-    
+
     tcpRtxScanner->registerTcp(*(f->src));
 
     int choice = rand()%net_paths[src][dst]->size();
 
     Route* routeout = new Route(*(net_paths[src][dst]->at(choice)));
     routeout->push_back(f->snk);
-    
+
     Route* routein = new Route();
     routein->push_back(f->src);
-    
+
     f->src->connect(*routeout, *routein, *(f->snk), starttime);
     return f;
 }
 
 void ShortFlows::doNextEvent() {
   run();
-  
+
   simtime_picosec nextArrival = (simtime_picosec)(exponential(_lambda)*timeFromSec(1));
   eventlist().sourceIsPendingRel(*this, nextArrival);
 }
@@ -57,7 +57,7 @@ void ShortFlows::run(){
 
   //look for inactive connection
   connection* c = _traffic_matrix->at(pos);
-  
+
   ShortFlow* f = NULL;
   for (unsigned int i=0;i<connections[c->src][c->dst].size();i++){
     f = connections[c->src][c->dst][i];
