@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "pipe.h"
 #include <iostream>
 #include <sstream>
@@ -25,7 +25,7 @@ Pipe::receivePacket(Packet& pkt)
 
 void
 Pipe::doNextEvent() {
-    if (_inflight.size() == 0) 
+    if (_inflight.size() == 0)
         return;
 
     Packet *pkt = _inflight.back().second;

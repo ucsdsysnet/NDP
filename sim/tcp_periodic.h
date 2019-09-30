@@ -22,7 +22,7 @@ public:
   void receivePacket(Packet& pkt);
   void reset();
   void doNextEvent();
- 
+
 // should really be private, but loggers want to see:
   simtime_picosec _period,_active_time,_idle_time,_start_active,_end_active;
   bool _is_active;
@@ -31,7 +31,8 @@ public:
 class TcpSinkPeriodic : public TcpSink {
 friend class TcpSrcPeriodic;
 public:
-        TcpSinkPeriodic();
+        TcpSinkPeriodic(EventList &eventlist);
+        TcpSinkPeriodic(EventList &eventlist, simtime_picosec ack_delay);
 
         void reset();
 };

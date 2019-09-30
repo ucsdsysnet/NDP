@@ -13,7 +13,7 @@ TcpSrcPeriodic::TcpSrcPeriodic(TcpLogger* logger, TrafficLogger* pktLogger, Even
   _end_active = 0;
   _idle_time = idle;
   _active_time = active;
-  _is_active = false;  
+  _is_active = false;
   _ssthresh = 0xffffffff;
 }
 
@@ -37,7 +37,7 @@ void TcpSrcPeriodic::reset(){
   _RFC2988_RTO_timeout = timeInf;
 }
 
-void 
+void
 TcpSrcPeriodic::connect(route_t& routeout, route_t& routeback, TcpSink& sink, simtime_picosec starttime)
 {
   _is_active = false;
@@ -45,7 +45,7 @@ TcpSrcPeriodic::connect(route_t& routeout, route_t& routeback, TcpSink& sink, si
   TcpSrc::connect(routeout,routeback,sink,starttime);
 }
 
-void 
+void
 TcpSrcPeriodic::doNextEvent() {
   if (_idle_time==0||_active_time==0){
     _is_active = true;
@@ -56,7 +56,7 @@ TcpSrcPeriodic::doNextEvent() {
   if (_is_active){
     if (eventlist().now()>=_end_active && _idle_time!=0 && _active_time!=0 ){
       _is_active = false;
-      
+
       //this clears RTOs too
       reset();
       eventlist().sourceIsPendingRel(*this,(simtime_picosec)(2*drand()*_idle_time));
@@ -80,7 +80,7 @@ TcpSrcPeriodic::doNextEvent() {
   }
 }
 
-void 
+void
 TcpSrcPeriodic::receivePacket(Packet& pkt){
   if (_is_active)
     TcpSrc::receivePacket(pkt);
@@ -94,9 +94,9 @@ TcpSrcPeriodic::receivePacket(Packet& pkt){
 //  Tcp Periodic SINK
 ////////////////////////////////////////////////////////////////
 
-TcpSinkPeriodic::TcpSinkPeriodic() : TcpSink() 
-{
-}
+TcpSinkPeriodic::TcpSinkPeriodic(EventList &eventlist) : TcpSink(eventlist) { }
+TcpSinkPeriodic::TcpSinkPeriodic(EventList &eventlist, simtime_picosec ack_delay)
+    : TcpSink(eventlist, ack_delay) { }
 
 void TcpSinkPeriodic::reset(){
   _cumulative_ack = 0;

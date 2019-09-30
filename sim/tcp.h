@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #ifndef TCP_H
 #define TCP_H
 
@@ -21,6 +21,7 @@
 //#define RANDOM_PATH 1
 
 //#define MAX_SENT 10000
+#define TCP_RESPONSE_DELAY_US 0u
 
 class TcpSink;
 class MultipathTcpSrc;
@@ -31,7 +32,7 @@ class TcpSrc : public PacketSink, public EventSource {
  public:
     TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
     uint32_t get_id(){ return id;}
-    virtual void connect(const Route& routeout, const Route& routeback, 
+    virtual void connect(const Route& routeout, const Route& routeback,
                          TcpSink& sink, simtime_picosec startTime);
     void startflow();
     inline void joinMultipathConnection(MultipathTcpSrc* multipathSrc) {
@@ -103,7 +104,7 @@ class TcpSrc : public PacketSink, public EventSource {
 #endif
     void send_packets();
 
-        
+
 #ifdef MODEL_RECEIVE_WINDOW
     SentPackets _sent_packets;
     uint64_t _highest_data_seq;
@@ -135,16 +136,18 @@ class TcpSrc : public PacketSink, public EventSource {
     string _nodename;
 };
 
-class TcpSink : public PacketSink, public DataReceiver, public Logged {
+class TcpSink : public PacketSink, public EventSource, public DataReceiver {
     friend class TcpSrc;
  public:
-    TcpSink();
+    TcpSink(EventList &eventlist);
+    TcpSink(EventList &eventlist, simtime_picosec ack_delay);
 
     inline void joinMultipathConnection(MultipathTcpSink* multipathSink){
         _mSink = multipathSink;
     };
 
     void receivePacket(Packet& pkt);
+    void doNextEvent();
     TcpAck::seq_t _cumulative_ack; // the packet we have cumulatively acked
     uint64_t _packets;
     uint32_t _drops;
@@ -154,7 +157,7 @@ class TcpSink : public PacketSink, public DataReceiver, public Logged {
     virtual const string& nodename() { return _nodename; }
 
     MultipathTcpSink* _mSink;
-    list<TcpAck::seq_t> _received; /* list of packets above a hole, that 
+    list<TcpAck::seq_t> _received; /* list of packets above a hole, that
                                       we've received */
 
 #ifdef PACKET_SCATTER
@@ -172,6 +175,9 @@ class TcpSink : public PacketSink, public DataReceiver, public Logged {
     const Route* _route;
 
     // Mechanism
+    typedef pair<simtime_picosec, TcpAck*> ackrecord_t;
+    list<ackrecord_t> _waitingacks;
+    simtime_picosec _ack_delay;
     void send_ack(simtime_picosec ts,bool marked);
 
     string _nodename;

@@ -9,14 +9,14 @@
 class EventList;
 
 class EventSource : public Logged {
-        public:
-                EventSource(EventList& eventlist, const string& name) : Logged(name), _eventlist(eventlist) {};
-                virtual ~EventSource() {};
-                virtual void doNextEvent() = 0;
-                inline EventList& eventlist() const {return _eventlist;}
-        protected:
-                EventList& _eventlist;
-        };
+public:
+        EventSource(EventList& eventlist, const string& name) : Logged(name), _eventlist(eventlist) {};
+        virtual ~EventSource() {};
+        virtual void doNextEvent() = 0;
+        inline EventList& eventlist() const {return _eventlist;}
+protected:
+        EventList& _eventlist;
+};
 
 class EventList {
 public:

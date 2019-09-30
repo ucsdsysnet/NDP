@@ -29,7 +29,7 @@ public:
   virtual void receivePacket(Packet& pkt);
   void reset(uint64_t bb, int rs);
   virtual void doNextEvent();
- 
+
 // should really be private, but loggers want to see:
 
   uint64_t _bytes_to_send;
@@ -42,7 +42,8 @@ public:
 class TcpSinkTransfer : public TcpSink {
 friend class TcpSrcTransfer;
 public:
-        TcpSinkTransfer();
+        TcpSinkTransfer(EventList &eventlist);
+        TcpSinkTransfer(EventList &eventlist, simtime_picosec ack_delay);
 
         void reset();
 };

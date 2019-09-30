@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "dctcp_transfer.h"
 #include "mtcp.h"
 #include "math.h"
@@ -12,13 +12,16 @@
 extern int CDF_WEB [];
 
 DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
-                               uint64_t bytes_to_send, vector<const Route*>* p, 
+                               uint64_t bytes_to_send, vector<const Route*>* p,
                                EventSource* stopped) : DCTCPSrc(logger,pktLogger,eventlist)
 {
-  _is_active = false;  
+  _is_active = false;
   _ssthresh = 0xffffffff;
   //_cwnd = 90000;
-  _bytes_to_send = generateFlowSize();
+  if(bytes_to_send)
+    _bytes_to_send = bytes_to_send;
+  else
+    _bytes_to_send = generateFlowSize();
   set_flowsize(_bytes_to_send+2*_mss);
   _paths = p;
 
@@ -30,7 +33,7 @@ DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, 
 }
 
 uint64_t DCTCPSrcTransfer::generateFlowSize(){
-  return CDF_WEB[(int)(drand()*10)];  
+  return CDF_WEB[(int)(drand()*10)];
 }
 
 void DCTCPSrcTransfer::reset(uint64_t bb, int shouldRestart){
@@ -43,23 +46,23 @@ void DCTCPSrcTransfer::reset(uint64_t bb, int shouldRestart){
   _last_acked = 0;
   _dupacks = 0;
   _bytes_to_send = generateFlowSize();
-  set_flowsize(_bytes_to_send+2*_mss);  
+  set_flowsize(_bytes_to_send+2*_mss);
   _mdev = 0;
   _rto = timeFromMs(3000);
   _recoverq = 0;
   _in_fast_recovery = false;
   _established = false;
-  
+
   _rtx_timeout_pending = false;
   _RFC2988_RTO_timeout = timeInf;
-  
+
   //_bytes_to_send = bb;
 
   if (shouldRestart)
       eventlist().sourceIsPendingRel(*this,timeFromMs(1));
 }
 
-void 
+void
 DCTCPSrcTransfer::connect(const Route& routeout, const Route& routeback, TcpSink& sink, simtime_picosec starttime)
 {
   _is_active = false;
@@ -67,7 +70,7 @@ DCTCPSrcTransfer::connect(const Route& routeout, const Route& routeback, TcpSink
   DCTCPSrc::connect(routeout,routeback,sink,starttime);
 }
 
-void 
+void
 DCTCPSrcTransfer::doNextEvent() {
   if (!_is_active){
     _is_active = true;
@@ -89,7 +92,7 @@ DCTCPSrcTransfer::doNextEvent() {
   else DCTCPSrc::doNextEvent();
 }
 
-void 
+void
 DCTCPSrcTransfer::receivePacket(Packet& pkt){
   if (_is_active){
       DCTCPSrc::receivePacket(pkt);
@@ -98,13 +101,13 @@ DCTCPSrcTransfer::receivePacket(Packet& pkt){
           assert (!_mSrc);
           if (_last_acked>=_bytes_to_send){
               _is_active = false;
-              
-              cout << endl << "Flow " << str() << " " <<_bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
-              
+
+              cout << endl << "Flow " << str() << " " <<_bytes_to_send << " finished after " << timeAsUs(eventlist().now()-_started) << " us" << endl;
+
               if (_flow_stopped){
                   _flow_stopped->doNextEvent();
               }
-              else 
+              else
                   reset(_bytes_to_send,1);
           }
       }
@@ -122,7 +125,7 @@ void DCTCPSrcTransfer::rtx_timer_hook(simtime_picosec now, simtime_picosec perio
   if (_highest_sent == 0) return;
 
   cout << "Transfer timeout: active " << _is_active << " bytes to send " << _bytes_to_send << " sent " << _last_acked << " established? " << _established << " HSENT " << _highest_sent << endl;
-  
+
   DCTCPSrc::rtx_timer_hook(now,period);
 }
 
@@ -130,9 +133,9 @@ void DCTCPSrcTransfer::rtx_timer_hook(simtime_picosec now, simtime_picosec perio
 //  DCTCP Transfer SINK
 ////////////////////////////////////////////////////////////////
 
-DCTCPSinkTransfer::DCTCPSinkTransfer() : TcpSink() 
-{
-}
+DCTCPSinkTransfer::DCTCPSinkTransfer(EventList &eventlist) : TcpSink(eventlist) { }
+DCTCPSinkTransfer::DCTCPSinkTransfer(EventList &eventlist, simtime_picosec ack_delay)
+    : TcpSink(eventlist, ack_delay) { }
 
 void DCTCPSinkTransfer::reset(){
   _cumulative_ack = 0;

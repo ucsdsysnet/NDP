@@ -30,7 +30,7 @@ public:
   void reset(uint64_t bb, int rs);
   virtual void doNextEvent();
   uint64_t generateFlowSize();
-  
+
 // should really be private, but loggers want to see:
 
   uint64_t _bytes_to_send;
@@ -43,7 +43,8 @@ public:
 class DCTCPSinkTransfer : public TcpSink {
 friend class DCTCPSrcTransfer;
 public:
-        DCTCPSinkTransfer();
+        DCTCPSinkTransfer(EventList &eventlist);
+        DCTCPSinkTransfer(EventList &eventlist, simtime_picosec ack_delay);
 
         void reset();
 };

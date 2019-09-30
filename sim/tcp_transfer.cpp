@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "tcp_transfer.h"
 #include "mtcp.h"
 #include "math.h"
@@ -17,10 +17,10 @@ uint64_t generateFlowSize(){
 }
 
 TcpSrcTransfer::TcpSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
-                               uint64_t bytes_to_send, vector<const Route*>* p, 
+                               uint64_t bytes_to_send, vector<const Route*>* p,
                                EventSource* stopped) : TcpSrc(logger,pktLogger,eventlist)
 {
-  _is_active = false;  
+  _is_active = false;
   _ssthresh = 0xffffffff;
   //_cwnd = 90000;
   _bytes_to_send = bytes_to_send;
@@ -48,10 +48,10 @@ void TcpSrcTransfer::reset(uint64_t bb, int shouldRestart){
   _recoverq = 0;
   _in_fast_recovery = false;
   _established = false;
-  
+
   _rtx_timeout_pending = false;
   _RFC2988_RTO_timeout = timeInf;
-  
+
   //_bytes_to_send = bb;
 
   if (shouldRestart)
@@ -59,7 +59,7 @@ void TcpSrcTransfer::reset(uint64_t bb, int shouldRestart){
 }
 
 
-void 
+void
 TcpSrcTransfer::connect(const Route& routeout, const Route& routeback, TcpSink& sink, simtime_picosec starttime)
 {
   _is_active = false;
@@ -67,7 +67,7 @@ TcpSrcTransfer::connect(const Route& routeout, const Route& routeback, TcpSink& 
   TcpSrc::connect(routeout,routeback,sink,starttime);
 }
 
-void 
+void
 TcpSrcTransfer::doNextEvent() {
   if (!_is_active){
     _is_active = true;
@@ -89,7 +89,7 @@ TcpSrcTransfer::doNextEvent() {
   else TcpSrc::doNextEvent();
 }
 
-void 
+void
 TcpSrcTransfer::receivePacket(Packet& pkt){
   if (_is_active){
       TcpSrc::receivePacket(pkt);
@@ -97,28 +97,28 @@ TcpSrcTransfer::receivePacket(Packet& pkt){
       if (_bytes_to_send>0){
           if (!_mSrc && _last_acked>=_bytes_to_send){
               _is_active = false;
-              
+
               cout << endl << "Flow " << _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
-              
+
               if (_flow_stopped){
                   _flow_stopped->doNextEvent();
               }
-              else 
+              else
                   reset(_bytes_to_send,1);
           }
           else if (_mSrc){
               if (_last_acked >= _bytes_to_send/_mSrc->_subflows.size() && _mSrc->compute_total_bytes()>=_bytes_to_send){
                   //log finish time
-                  
+
                   cout << endl << "Flow " << _bytes_to_send << " finished after " << timeAsMs(eventlist().now()-_started) << endl;
-                  
+
                   //reset all the subflows, including this one.
                   int bb = generateFlowSize();
-                  
+
                   list<TcpSrc*>::iterator it;
                   int subflows_to_activate = bb >= 1000000 ? 8:1;
                   int crt_subflow = 0;
-                  
+
                   for (it = _mSrc->_subflows.begin();it!=_mSrc->_subflows.end();it++){
                       TcpSrc* t = (*it);
                       TcpSrcTransfer* crt = (TcpSrcTransfer*)t;
@@ -143,7 +143,7 @@ void TcpSrcTransfer::rtx_timer_hook(simtime_picosec now, simtime_picosec period)
   if (_highest_sent == 0) return;
 
   cout << "Transfer timeout: active " << _is_active << " bytes to send " << _bytes_to_send << " sent " << _last_acked << " established? " << _established << " HSENT " << _highest_sent << endl;
-  
+
   TcpSrc::rtx_timer_hook(now,period);
 }
 
@@ -151,9 +151,9 @@ void TcpSrcTransfer::rtx_timer_hook(simtime_picosec now, simtime_picosec period)
 //  Tcp Transfer SINK
 ////////////////////////////////////////////////////////////////
 
-TcpSinkTransfer::TcpSinkTransfer() : TcpSink() 
-{
-}
+TcpSinkTransfer::TcpSinkTransfer(EventList &eventlist) : TcpSink(eventlist) { }
+TcpSinkTransfer::TcpSinkTransfer(EventList &eventlist, simtime_picosec ack_delay)
+    : TcpSink(eventlist, ack_delay) { }
 
 void TcpSinkTransfer::reset(){
   _cumulative_ack = 0;
