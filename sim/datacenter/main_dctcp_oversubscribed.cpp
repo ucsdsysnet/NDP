@@ -276,7 +276,7 @@ int main(int argc, char **argv) {
           
                 ndpSrc = new DCTCPSrcTransfer(NULL, NULL, eventlist,0,net_paths[src][dest],NULL);
                 ndp_srcs.push_back(ndpSrc);
-                ndpSnk = new TcpSink();
+                ndpSnk = new TcpSink(eventlist);
           
                 ndpSrc->setName("dctcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
                 logfile.writeName(*ndpSrc);

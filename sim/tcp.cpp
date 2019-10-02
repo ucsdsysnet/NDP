@@ -10,8 +10,11 @@
 ////////////////////////////////////////////////////////////////
 
 TcpSrc::TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger,
-               EventList &eventlist)
-    : EventSource(eventlist,"tcp"),  _logger(logger), _flow(pktlogger)
+               EventList &eventlist) : TcpSrc(logger, pktlogger, eventlist, TCP_DEFAULT_DELAY_US) { }
+
+TcpSrc::TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger,
+               EventList &eventlist, simtime_picosec send_delay)
+    : EventSource(eventlist,"tcp"),  _logger(logger), _flow(pktlogger), _flow_started(false), _send_delay(send_delay)
 {
     _mss = Packet::data_packet_size();
     _maxcwnd = 0xffffffff;//MAX_SENT*_mss;
@@ -91,6 +94,7 @@ TcpSrc::startflow() {
     _cwnd = 10*_mss;
     _unacked = _cwnd;
     _established = false;
+    _flow_started = true;
 
     send_packets();
 }
@@ -385,10 +389,14 @@ TcpSrc::send_packets() {
 
     if (!_established){
         //send SYN packet and wait for SYN/ACK
-        Packet * p  = TcpPacket::new_syn_pkt(_flow, *_route, 1, 1);
+        TcpPacket * p  = TcpPacket::new_syn_pkt(_flow, *_route, 1, 1);
         _highest_sent = 1;
 
-        p->sendOn();
+        if(_waitingtcp.empty()) {
+            eventlist().sourceIsPendingRel(*this, _send_delay);
+        }
+        _waitingtcp.push_front(make_pair(eventlist().now() + _send_delay, p));
+        // p->sendOn();
 
         if(_RFC2988_RTO_timeout == timeInf) {// RFC2988 5.1
             _RFC2988_RTO_timeout = eventlist().now() + _rto;
@@ -465,7 +473,11 @@ TcpSrc::send_packets() {
         _highest_sent += _mss;  //XX beware wrapping
         _packets_sent += _mss;
 
-        p->sendOn();
+        if(_waitingtcp.empty()) {
+            eventlist().sourceIsPendingRel(*this, _send_delay);
+        }
+        _waitingtcp.push_front(make_pair(eventlist().now() + _send_delay, p));
+        // p->sendOn();
 
         if(_RFC2988_RTO_timeout == timeInf) {// RFC2988 5.1
             _RFC2988_RTO_timeout = eventlist().now() + _rto;
@@ -478,8 +490,13 @@ TcpSrc::retransmit_packet() {
     if (!_established){
         assert(_highest_sent == 1);
 
-        Packet* p  = TcpPacket::new_syn_pkt(_flow, *_route, 1, 1);
-        p->sendOn();
+        TcpPacket* p  = TcpPacket::new_syn_pkt(_flow, *_route, 1, 1);
+
+        if(_waitingtcp.empty()) {
+            eventlist().sourceIsPendingRel(*this, _send_delay);
+        }
+        _waitingtcp.push_front(make_pair(eventlist().now() + _send_delay, p));
+        // p->sendOn();
 
         cout << "Resending SYN, waiting for SYN/ACK" << endl;
         return;
@@ -516,7 +533,11 @@ TcpSrc::retransmit_packet() {
 
     p->flow().logTraffic(*p,*this,TrafficLogger::PKT_CREATESEND);
     p->set_ts(eventlist().now());
-    p->sendOn();
+    if(_waitingtcp.empty()) {
+        eventlist().sourceIsPendingRel(*this, _send_delay);
+    }
+    _waitingtcp.push_front(make_pair(eventlist().now() + _send_delay, p));
+    // p->sendOn();
 
     _packets_sent += _mss;
 
@@ -603,9 +624,28 @@ void TcpSrc::doNextEvent() {
 
         if (_mSrc)
             _mSrc->window_changed();
-    } else {
+    } else if (!_flow_started) {
         //cout << "Starting flow" << endl;
         startflow();
+    }
+
+    if (_waitingtcp.size() > 0) {
+        simtime_picosec thissendtime = _waitingtcp.back().first;
+        while(eventlist().now() >= thissendtime) {
+            TcpPacket *pkt = _waitingtcp.back().second;
+            _waitingtcp.pop_back();
+            pkt->sendOn();
+
+            if(_waitingtcp.empty())
+                break;
+            else
+                thissendtime = _waitingtcp.back().first;
+        }
+
+        if(!_waitingtcp.empty()) {
+            simtime_picosec nextsendtime = _waitingtcp.back().first;
+            eventlist().sourceIsPending(*this, nextsendtime);
+        }
     }
 }
 
@@ -614,7 +654,7 @@ void TcpSrc::doNextEvent() {
 ////////////////////////////////////////////////////////////////
 
 TcpSink::TcpSink(EventList &eventlist)
-    : TcpSink(eventlist, timeFromUs(TCP_RESPONSE_DELAY_US)) { }
+    : TcpSink(eventlist, timeFromUs(TCP_DEFAULT_DELAY_US)) { }
 
 TcpSink::TcpSink(EventList &eventlist, simtime_picosec ack_delay)
     : EventSource(eventlist, "sink"), // Logged("sink"),
@@ -701,7 +741,7 @@ TcpSink::send_ack(simtime_picosec ts,bool marked) {
     TcpAck *ack = TcpAck::newpkt(_src->_flow, *rt, 0, _cumulative_ack,
                                  _mSink!=NULL?_mSink->data_ack():0);
 
-    // ack->flow().logTraffic(*ack,*this,TrafficLogger::PKT_CREATESEND);
+    ack->flow().logTraffic(*ack,*this,TrafficLogger::PKT_CREATESEND);
     ack->set_ts(ts);
     if (marked)
         ack->set_flags(ECN_ECHO);
@@ -719,11 +759,19 @@ void TcpSink::doNextEvent() {
     if (_waitingacks.size() == 0)
         return;
 
-    TcpAck *ack = _waitingacks.back().second;
-    _waitingacks.pop_back();
-    ack->flow().logTraffic(*ack,*this,TrafficLogger::PKT_CREATESEND);
+    simtime_picosec thisacktime = _waitingacks.back().first;
+    while(eventlist().now() >= thisacktime) {
+        TcpAck *ack = _waitingacks.back().second;
+        _waitingacks.pop_back();
+        // ack->flow().logTraffic(*ack,*this,TrafficLogger::PKT_CREATESEND);
 
-    ack->sendOn();
+        ack->sendOn();
+
+        if(_waitingacks.empty())
+            break;
+        else
+            thisacktime = _waitingacks.back().first;
+    }
 
     if(!_waitingacks.empty()) {
         simtime_picosec nextacktime = _waitingacks.back().first;

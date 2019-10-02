@@ -1,6 +1,8 @@
 #include "connection_matrix.h"
 #include <string.h>
+#include <algorithm>
 #include <iostream>
+#include <random>
 
 ConnectionMatrix::ConnectionMatrix(int n)
 {
@@ -14,7 +16,7 @@ void ConnectionMatrix::setPermutation(int conn){
 void ConnectionMatrix::addConnection(int src, int dest){
   if (connections.find(src)==connections.end())
     connections[src] = new vector<int>();
-  
+
   connections[src]->push_back(dest);
 }
 
@@ -27,7 +29,7 @@ void ConnectionMatrix::setPermutation(int conn, int rack_size){
 
   rack_count = N/rack_size;
   rack_load = (int*)calloc(rack_count,sizeof(int));
-  
+
   for (i=0;i<N;i++){
     is_dest[i] = 0;
     to[N] = -1;
@@ -83,13 +85,13 @@ void ConnectionMatrix::setPermutation(int conn, int rack_size){
 
 void ConnectionMatrix::setPermutation(){
   int is_dest[N],dest;
-  
+
   for (int i=0;i<N;i++)
     is_dest[i] = 0;
 
   for (int src = 0; src < N; src++) {
     vector<int>* destinations = new vector<int>();
-      
+
     int r = rand()%(N-src);
     for (dest = 0;dest<N;dest++){
       if (r==0&&!is_dest[dest])
@@ -102,14 +104,14 @@ void ConnectionMatrix::setPermutation(){
       cout << "Wrong connections r " <<  r << "is_dest "<<is_dest[dest]<<endl;
       exit(1);
     }
-      
+
     if (src==dest){
       //find first other destination that is different!
       do {
         dest = (dest+1)%N;
       }
       while (is_dest[dest]);
-        
+
       if (src==dest){
         printf("Wrong connections 2!\n");
         exit(1);
@@ -118,7 +120,7 @@ void ConnectionMatrix::setPermutation(){
     is_dest[dest] = 1;
     destinations->push_back(dest);
 
-    connections[src] = destinations;    
+    connections[src] = destinations;
   }
 }
 
@@ -140,6 +142,32 @@ void ConnectionMatrix::setLocalTraffic(Topology* top){
   }
 }
 
+void ConnectionMatrix::setRandomGuaranteed(int cnx, int seed) {
+  vector<pair<int, int>> *all_possible_conns = new vector<pair<int, int>>();
+  all_possible_conns->reserve(N*N);
+  for(int src = 0; src < N; src++) {
+    for(int dst = 0; dst < N; dst++) {
+      all_possible_conns->push_back(make_pair(src,dst));
+    }
+    if (connections.find(src)==connections.end()){
+      connections[src] = new vector<int>();
+    }
+  }
+
+  mt19937 rng(seed);
+  shuffle(all_possible_conns->begin(), all_possible_conns->end(), rng);
+
+  for(int i = 0; i < cnx; i++) {
+    pair<int, int> next_pair = all_possible_conns->back();
+    all_possible_conns->pop_back();
+    int src = next_pair.first;
+    int dst = next_pair.second;
+    connections[src]->push_back(dst);
+  }
+
+  delete all_possible_conns;
+}
+
 void ConnectionMatrix::setRandom(int cnx){
   for (int conn = 0;conn<cnx; conn++) {
     int src = rand()%N;
@@ -148,7 +176,7 @@ void ConnectionMatrix::setRandom(int cnx){
     if (src==0||dest==N-1){
       conn--;
       continue;
-    }      
+    }
 
     if (connections.find(src)==connections.end()){
       connections[src] = new vector<int>();
@@ -173,7 +201,7 @@ void ConnectionMatrix::setVL2(){
       crt = 10;
     else if (coin<0.95)
       crt = 10+rand()%70;
-    else 
+    else
       crt = 80;
 
     for (int i = 0;i<crt;i++){
@@ -195,9 +223,9 @@ vector<connection*>* ConnectionMatrix::getAllConnections(){
   for (it = connections.begin(); it!=connections.end();it++){
     int src = (*it).first;
     destinations = (vector<int>*)(*it).second;
-    
+
     vector<int> subflows_chosen;
-    
+
     for (unsigned int dst_id = 0;dst_id<destinations->size();dst_id++){
       connection* tmp = new connection();
       tmp->src = src;
@@ -250,7 +278,7 @@ void ConnectionMatrix::setStaggeredPermutation(Topology* top,double local){
       }
       while (found && i++<15);
     }
-    
+
     if (v>=local || (v<local&&found)){
       dest = rand()%N;
       while (is_dest[dest])
@@ -259,7 +287,7 @@ void ConnectionMatrix::setStaggeredPermutation(Topology* top,double local){
 
     assert(dest>=0&&dest<N);
     assert(is_dest[dest]==0);
-     
+
     connections[src]->push_back(dest);
     is_dest[dest] = 1;
   }
@@ -307,9 +335,9 @@ void ConnectionMatrix::setHotspot(int hosts_per_hotspot, int count){
       first = rand()%N;
     }
     while (is_dest[first]);
-    
+
     is_dest[first] = 1;
-    
+
     for (int i=0;i<hosts_per_hotspot;i++){
       do{
         if (hosts_per_hotspot==N)
@@ -320,12 +348,12 @@ void ConnectionMatrix::setHotspot(int hosts_per_hotspot, int count){
       while(is_done[src]);
       is_done[src]=1;
 
-      if (connections.find(src)==connections.end())      
+      if (connections.find(src)==connections.end())
         connections[src] = new vector<int>();
 
       connections[src]->push_back(first);
       is_done[src] = 1;
-    }  
+    }
   }
 }
 
@@ -340,11 +368,11 @@ void ConnectionMatrix::setIncast(int hosts_per_hotspot, int center){
   int first = 0;
 
   for (int i=center;i<hosts_per_hotspot+center;i++){
-    if (connections.find(i)==connections.end())      
+    if (connections.find(i)==connections.end())
       connections[i] = new vector<int>();
-    
+
     connections[i]->push_back(first);
-  }  
+  }
 }
 
 void ConnectionMatrix::setOutcast(int hosts_per_hotspot, int center){
@@ -360,7 +388,7 @@ void ConnectionMatrix::setOutcast(int hosts_per_hotspot, int center){
 
   for (int i=center;i<hosts_per_hotspot+center;i++){
     connections[src]->push_back(i);
-  }  
+  }
 }
 
 /*
@@ -385,14 +413,14 @@ void ConnectionMatrix::setHotspot(int hosts){
     connections[src] = new vector<int>();
     connections[src]->push_back(first);
     //is_dest[src] = 1;
-  }  
+  }
 
   for (int src = 0; src < N; src++) {
     if (is_done[src])
       continue;
 
     vector<int>* destinations = new vector<int>();
-      
+
     int r = rand()%(N-src);
     for (dest = 0;dest<N;dest++){
       if (r==0&&!is_dest[dest])
@@ -405,14 +433,14 @@ void ConnectionMatrix::setHotspot(int hosts){
       cout << "Wrong connections r " <<  r << "is_dest "<<is_dest[dest]<<endl;
       exit(1);
     }
-      
+
     if (src==dest){
       //find first other destination that is different!
       do {
         dest = (dest+1)%N;
       }
       while (is_dest[dest]);
-        
+
       if (src==dest){
         printf("Wrong connections 2!\n");
         exit(1);
@@ -421,7 +449,7 @@ void ConnectionMatrix::setHotspot(int hosts){
     is_dest[dest] = 1;
     destinations->push_back(dest);
 
-    connections[src] = destinations;    
+    connections[src] = destinations;
   }
 }
 */

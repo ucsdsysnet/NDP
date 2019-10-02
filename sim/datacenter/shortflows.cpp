@@ -20,7 +20,7 @@ ShortFlows::ShortFlows(double lambda, EventList& eventlist, vector<const Route*>
 ShortFlow* ShortFlows::createConnection(int src, int dst, simtime_picosec starttime){
     ShortFlow* f = new ShortFlow();
     f->src = new TcpSrcTransfer(NULL,NULL,eventlist(),70000,net_paths[src][dst]);
-    f->snk = new TcpSinkTransfer();
+    f->snk = new TcpSinkTransfer(eventlist());
 
     int pos = connections[src][dst].size();
 

@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "dctcp.h"
 #include "ecn.h"
 #include "mtcp.h"
@@ -11,14 +11,18 @@ string ntoa(double n);
 //  DCTCP SOURCE
 ////////////////////////////////////////////////////////////////
 
-DCTCPSrc::DCTCPSrc(TcpLogger* logger, TrafficLogger* pktlogger, 
-                   EventList &eventlist) : TcpSrc(logger,pktlogger,eventlist)
+DCTCPSrc::DCTCPSrc(TcpLogger* logger, TrafficLogger* pktlogger,
+                   EventList &eventlist)
+  : DCTCPSrc(logger,pktlogger,eventlist,timeFromUs(TCP_DEFAULT_DELAY_US)) { }
+
+DCTCPSrc::DCTCPSrc(TcpLogger* logger, TrafficLogger* pktlogger,
+                   EventList &eventlist, simtime_picosec host_delay) : TcpSrc(logger,pktlogger,eventlist, host_delay)
 {
     _pkts_seen = 0;
     _pkts_marked = 0;
     _alfa = 0;
     _past_cwnd = 2*Packet::data_packet_size();
-    _rto = timeFromMs(10);    
+    _rto = timeFromMs(10);
 }
 
 //drop detected
@@ -37,7 +41,7 @@ DCTCPSrc::deflate_window(){
 
 
 void
-DCTCPSrc::receivePacket(Packet& pkt) 
+DCTCPSrc::receivePacket(Packet& pkt)
 {
     _pkts_seen++;
 
@@ -51,7 +55,7 @@ DCTCPSrc::receivePacket(Packet& pkt)
 
     if (_pkts_seen * _mss >= _past_cwnd){
         //update window, once per RTT
-        
+
         double f = (double)_pkts_marked/_pkts_seen;
         //	cout << ntoa(timeAsMs(eventlist().now())) << " ID " << str() << " PKTS MARKED " << _pkts_marks;
 
@@ -76,7 +80,7 @@ DCTCPSrc::receivePacket(Packet& pkt)
     //cout << ntoa(timeAsMs(eventlist().now())) << " ATCPID " << str() << " CWND " << _cwnd << " alfa " << ntoa(_alfa)<< endl;
 }
 
-void 
+void
 DCTCPSrc::rtx_timer_hook(simtime_picosec now,simtime_picosec period){
     TcpSrc::rtx_timer_hook(now,period);
 };

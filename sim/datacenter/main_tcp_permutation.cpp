@@ -297,13 +297,13 @@ int main(int argc, char **argv) {
                     //if (connID==1){
                     //cout << "Creating SRC transfer " << endl;
                     //tcpSrc = new TcpSrcTransfer(NULL, NULL, eventlist,90000,net_paths[src][dest],NULL);
-                    //tcpSnk = new TcpSinkTransfer();
+                    //tcpSnk = new TcpSinkTransfer(eventlist);
                     //}
                     //else
                         {
                         tcpSrc = new TcpSrc(NULL, NULL, eventlist);
                         tcpSrc->set_ssthresh(ssthresh*Packet::data_packet_size());
-                        tcpSnk = new TcpSink();
+                        tcpSnk = new TcpSink(eventlist);
                     }
 
                     tcpSrc->setName("tcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(inter)+")");

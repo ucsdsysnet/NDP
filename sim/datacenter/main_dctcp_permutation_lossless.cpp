@@ -272,7 +272,7 @@ int main(int argc, char **argv) {
                 ndpSrc = new DCTCPSrc(NULL, NULL, eventlist);
                 ndpSrc->set_ssthresh(cwnd*Packet::data_packet_size());
                 ndp_srcs.push_back(ndpSrc);
-                ndpSnk = new TcpSink();//eventlist, 1 /*pull at line rate*/);
+                ndpSnk = new TcpSink(eventlist);//eventlist, 1 /*pull at line rate*/);
           
                 ndpSrc->setName("dctcp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(connection)+")");
                 logfile.writeName(*ndpSrc);

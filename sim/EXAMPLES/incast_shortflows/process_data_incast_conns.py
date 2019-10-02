@@ -1,4 +1,4 @@
-#!/opt/local/bin/python
+#!/usr/bin/env python
 
 from __future__ import print_function
 import subprocess
@@ -10,7 +10,8 @@ filesize = sys.argv[3]
 cwnd = sys.argv[4]
 tag = sys.argv[5]
 print("tag:", tag)
-subprocess.call("../../parse_output " + filename + " -ascii | grep RCV | grep FULL > " + filename+".asc", shell=True)
+# subprocess.call("../../parse_output " + filename + " -ascii | grep RCV | grep FULL > " + filename+".asc", shell=True)
+subprocess.call("./parse_output " + filename + " -ascii | grep RCV > " + filename+".asc", shell=True)
 
 ifile = open(filename+".asc", "r")
 flowtimes = {}
@@ -23,6 +24,11 @@ for line in ifile:
     else:
         flag = "none"
     flowid = data[8]
+    if ev == "TCPTRAFFIC":
+        if flowid not in flowtimes:
+            flowtimes[flowid] = time
+        else:
+            flowtimes[flowid] = max(flowtimes[flowid], time)
     if (ev == "NDPTRAFFIC" or ev == "NDPLITETRAFFIC") and flag == "LASTDATA":
         #print(ev, flowid, flag)
         flowtimes[flowid] = time;
@@ -31,7 +37,7 @@ for line in ifile:
             #print("update: ", ev, flowid, flag)
             flowtimes[flowid] = time;
 #print(flowtimes)
-#print("flowtimes");        
+#print("flowtimes");
 lasttimes = []
 for id in flowtimes:
     #print(id)
@@ -70,4 +76,4 @@ print(conns, lasttimes[0], lasttimes[numflows/2], lasttimes[numflows-1], file=of
 print(conns, lasttimes[0], lasttimes[numflows/2], lasttimes[numflows-1]);
 ofile.close()
 
-    
+

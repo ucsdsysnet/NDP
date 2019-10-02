@@ -295,13 +295,13 @@ int main(int argc, char **argv) {
                     if (connID==1){
                         cout << "Creating SRC transfer " << endl;
                         ndpSrc = new TcpSrcTransfer(NULL, NULL, eventlist,90000,net_paths[src][dest],NULL);
-                        ndpSnk = new TcpSinkTransfer();
+                        ndpSnk = new TcpSinkTransfer(eventlist);
                     }
                     else 
                         {
                         ndpSrc = new TcpSrc(NULL, NULL, eventlist);
                         ndpSrc->set_ssthresh(cwnd*Packet::data_packet_size());
-                        ndpSnk = new TcpSink();
+                        ndpSnk = new TcpSink(eventlist);
                         }
                     
                     ndpSrc->setName("ndp_" + ntoa(src) + "_" + ntoa(dest)+"("+ntoa(inter)+")");

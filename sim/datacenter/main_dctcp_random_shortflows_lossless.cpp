@@ -272,12 +272,12 @@ int main(int argc, char **argv) {
                 
                 /*if (dest!=0){
                     ndpSrc = new DCTCPSrcTransfer(NULL, NULL, eventlist,90000,NULL,NULL);
-                    ndpSnk = new DCTCPSinkTransfer();
+                    ndpSnk = new DCTCPSinkTransfer(eventlist);
                 }
                 else */
                     {
                     ndpSrc = new DCTCPSrc(NULL, NULL, eventlist);
-                    ndpSnk = new TcpSink();
+                    ndpSnk = new TcpSink(eventlist);
                 }
                 ndpSrc->set_ssthresh(cwnd*Packet::data_packet_size());
 

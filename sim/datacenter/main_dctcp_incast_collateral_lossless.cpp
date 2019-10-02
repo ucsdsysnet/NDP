@@ -282,7 +282,7 @@ int main(int argc, char **argv) {
           
                 //tcpSrc = new DCTCPSrc(NULL, &traffic_logger, eventlist);
                 tcpSrc = new DCTCPSrc(NULL, NULL, eventlist);
-                tcpSnk = new TcpSink();
+                tcpSnk = new TcpSink(eventlist);
           
                 tcpSrc->set_ssthresh(10*Packet::data_packet_size());
                 tcpSrc->set_flowsize(flowsize);
@@ -410,7 +410,7 @@ int main(int argc, char **argv) {
         abort(); // add node here
     TcpSrc* longSrc = new DCTCPSrc(NULL, &traffic_logger, eventlist);
     //longSrc->set_flowsize(flowsize);
-    TcpSink* longSnk = new TcpSink();
+    TcpSink* longSnk = new TcpSink(eventlist);
     tcpSrc->set_ssthresh(10*Packet::data_packet_size());
     tcpSrc->_rto = timeFromMs(10);
     longSrc->setName("long_" + ntoa(long_src_no) + "_" + ntoa(long_dest_no));

@@ -21,7 +21,7 @@
 //#define RANDOM_PATH 1
 
 //#define MAX_SENT 10000
-#define TCP_RESPONSE_DELAY_US 0u
+#define TCP_DEFAULT_DELAY_US 0u
 
 class TcpSink;
 class MultipathTcpSrc;
@@ -31,6 +31,7 @@ class TcpSrc : public PacketSink, public EventSource {
     friend class TcpSink;
  public:
     TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
+    TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist, simtime_picosec send_delay);
     uint32_t get_id(){ return id;}
     virtual void connect(const Route& routeout, const Route& routeback,
                          TcpSink& sink, simtime_picosec startTime);
@@ -124,9 +125,13 @@ class TcpSrc : public PacketSink, public EventSource {
 
     // Connectivity
     PacketFlow _flow;
+    bool _flow_started;
 
     // Mechanism
     void clear_timer(uint64_t start,uint64_t end);
+    typedef pair<simtime_picosec, TcpPacket*> tcprecord_t;
+    list<tcprecord_t> _waitingtcp;
+    simtime_picosec _send_delay;
 
     void retransmit_packet();
     //simtime_picosec _last_sent_time;

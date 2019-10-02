@@ -315,7 +315,7 @@ int main(int argc, char **argv) {
                     for (int inter = 0; inter < it_sub; inter++) {
                         //	      if (connID%10==0){
                         tcpSrc = new TcpSrc(NULL, NULL, eventlist);
-                        tcpSnk = new TcpSink();
+                        tcpSnk = new TcpSink(eventlist);
                         /*}
                           else {
                           tcpSrc = new TcpSrcTransfer(NULL,NULL,eventlist,bb,net_paths[src][dest]);

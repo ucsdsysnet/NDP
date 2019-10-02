@@ -38,6 +38,7 @@
 #define USE_FIRST_FIT 0
 #define FIRST_FIT_INTERVAL 100
 
+#define MAX_START_DELAY_US 100
 #define DEFAULT_PACKET_SIZE 9000
 #define DEFAULT_NODES 432
 #define DEFAULT_QUEUE_SIZE 100
@@ -53,6 +54,7 @@ EventList eventlist;
 
 int no_of_conns = 0, no_of_nodes = DEFAULT_NODES, ssthresh = 15, failed_links = 0,
     flowsize=0, seed_val=0;
+uint32_t ack_delay=0, host_delay=0;
 mem_b queuesize;
 stringstream filename(ios_base::out);
 
@@ -120,10 +122,17 @@ int parse_args(int argc, char** argv) {
             i++;
         } else if (!strcmp(argv[i],"-seed")){
             seed_val = atoi(argv[i+1]);
-            cout << "seed " << seed << endl;
+            cout << "seed " << seed_val << endl;
             i++;
-        }
-        else {
+        } else if (!strcmp(argv[i],"-ackdelay")) {
+            ack_delay = atoi(argv[i+1]);
+            cout << "ack_delay " << ack_delay << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-hostdelay")) {
+            host_delay = atoi(argv[i+1]);
+            cout << "host_delay " << host_delay << endl;
+            i++;
+        } else {
             exit_error(argv[0], argv[i]);
             return -1;
         }
@@ -207,7 +216,7 @@ int main(int argc, char **argv) {
 
     ConnectionMatrix* conns = new ConnectionMatrix(no_of_nodes);
     cout << "Running perm with " << no_of_conns << " connections" << endl;
-    conns->setRandom(no_of_conns);
+    conns->setRandomGuaranteed(no_of_conns, seed_val);
 
     TcpSrc* tcpSrc;
     TcpSink* tcpSnk;
@@ -237,8 +246,8 @@ int main(int argc, char **argv) {
             for (int connection=0;connection<1;connection++){
                 cnt_con ++;
 
-                tcpSrc = new DCTCPSrcTransfer(NULL, NULL, eventlist, flowsize, NULL, &stop_logger);
-                tcpSnk = new DCTCPSinkTransfer();
+                tcpSrc = new DCTCPSrcTransfer(NULL, NULL, eventlist, flowsize, NULL, &stop_logger, timeFromUs(host_delay));
+                tcpSnk = new DCTCPSinkTransfer(eventlist, timeFromUs(ack_delay));
 
                 tcpSrc->set_ssthresh(ssthresh*Packet::data_packet_size());
                 // tcpSrc->set_flowsize(flowsize*Packet::data_packet_size());
@@ -276,9 +285,9 @@ int main(int argc, char **argv) {
                 routein->push_back(tcpSrc);
 
                 // TODO swap this with another random start method.
-                extrastarttime = 0;// * drand();
+                extrastarttime = MAX_START_DELAY_US * drand();
 
-                tcpSrc->connect(*routeout, *routein, *tcpSnk, timeFromMs(extrastarttime));
+                tcpSrc->connect(*routeout, *routein, *tcpSnk, timeFromUs(extrastarttime));
                 sinkLogger.monitorSink(tcpSnk);
             }
         }
@@ -298,8 +307,7 @@ int main(int argc, char **argv) {
     logfile.write("# rtt =" + ntoa(rtt));
 
     // GO!
-    while (eventlist.doNextEvent()) {
-    }
+    while (eventlist.doNextEvent()) { }
 
     cout << "Done" << endl;
 }

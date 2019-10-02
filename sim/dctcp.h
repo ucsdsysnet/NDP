@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #ifndef DCTCP_H
 #define DCTCP_H
 
@@ -11,6 +11,7 @@
 class DCTCPSrc : public TcpSrc {
  public:
     DCTCPSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
+    DCTCPSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist, simtime_picosec host_delay);
     ~DCTCPSrc(){}
 
     // Mechanism

@@ -13,7 +13,13 @@ extern int CDF_WEB [];
 
 DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
                                uint64_t bytes_to_send, vector<const Route*>* p,
-                               EventSource* stopped) : DCTCPSrc(logger,pktLogger,eventlist)
+                               EventSource* stopped)
+    : DCTCPSrcTransfer(logger, pktLogger, eventlist, bytes_to_send, p, stopped, timeFromUs(TCP_DEFAULT_DELAY_US)) { }
+
+DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
+                               uint64_t bytes_to_send, vector<const Route*>* p,
+                               EventSource* stopped,
+                               simtime_picosec host_delay) : DCTCPSrc(logger,pktLogger,eventlist,host_delay)
 {
   _is_active = false;
   _ssthresh = 0xffffffff;

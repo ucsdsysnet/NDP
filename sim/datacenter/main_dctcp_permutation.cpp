@@ -255,11 +255,11 @@ int main(int argc, char **argv) {
 
                 //if (connID==1){
                 //  tcpSrc = new DCTCPSrcTransfer(NULL, NULL, eventlist,90000,NULL,NULL);
-                //  tcpSnk = new DCTCPSinkTransfer();
+                //  tcpSnk = new DCTCPSinkTransfer(eventlist);
                 //}
                 //else {
                     tcpSrc = new DCTCPSrc(NULL, NULL, eventlist);
-                    tcpSnk = new TcpSink();
+                    tcpSnk = new TcpSink(eventlist);
                     //}
                 tcpSrc->set_ssthresh(ssthresh*Packet::data_packet_size());
 

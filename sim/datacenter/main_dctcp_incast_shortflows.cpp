@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
                 //it_sub = 1;
 
                 tcpSrc = new DCTCPSrc(NULL, &traffic_logger, eventlist);
-                tcpSnk = new TcpSink();
+                tcpSnk = new TcpSink(eventlist);
 
                 tcpSrc->set_ssthresh(10*Packet::data_packet_size());
                 tcpSrc->set_flowsize(50*Packet::data_packet_size());
