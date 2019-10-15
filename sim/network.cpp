@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-    
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "network.h"
 
 #define DEFAULTDATASIZE 1500
@@ -7,7 +7,7 @@ bool Packet::_packet_size_fixed = false;
 
 // use set_attrs only when we want to do a late binding of the route -
 // otherwise use set_route or set_rg
-void 
+void
 Packet::set_attrs(PacketFlow& flow, int pkt_size, packetid_t id){
     _flow = &flow;
     _size = pkt_size;
@@ -18,8 +18,8 @@ Packet::set_attrs(PacketFlow& flow, int pkt_size, packetid_t id){
     _flags = 0;
 }
 
-void 
-Packet::set_route(PacketFlow& flow, const Route &route, int pkt_size, 
+void
+Packet::set_route(PacketFlow& flow, const Route &route, int pkt_size,
             packetid_t id){
     _flow = &flow;
     _size = pkt_size;
@@ -30,7 +30,7 @@ Packet::set_route(PacketFlow& flow, const Route &route, int pkt_size,
     _flags = 0;
 }
 
-void 
+void
 Packet::set_route(const Route &route){
     _route = &route;
 }
@@ -82,11 +82,11 @@ Packet::sendOn2(VirtualQueue* crtSink) {
 }
 
 // AKA, return to sender
-void 
-Packet::bounce() { 
-    assert(!_bounced); 
+void
+Packet::bounce() {
+    assert(!_bounced);
     assert(_route); // we only implement return-to-sender on regular routes
-    _bounced = true; 
+    _bounced = true;
     _is_header = true;
     _nexthop = _route->size() - _nexthop;
     //    _nexthop--;
@@ -96,22 +96,22 @@ Packet::bounce() {
     // allocate routes on a per packet basis.
 }
 
-void 
-Packet::unbounce(uint16_t pktsize) { 
-    assert(_bounced); 
+void
+Packet::unbounce(uint16_t pktsize) {
+    assert(_bounced);
     assert(_route); // we only implement return-to-sender on regular
     // routes, not route graphs. If we go back to using
     // route graphs at some, we'll need to fix this, but
     // for now we're not using them.
 
     // clear the packet for retransmission
-    _bounced = false; 
+    _bounced = false;
     _is_header = false;
     _size = pktsize;
     _nexthop = 0;
 }
 
-void 
+void
 Packet::free() {
 }
 
@@ -175,7 +175,7 @@ void PacketFlow::set_logger(TrafficLogger *logger) {
     _logger = logger;
 }
 
-void 
+void
 PacketFlow::logTraffic(Packet& pkt, Logged& location, TrafficLogger::TrafficEvent ev) {
     if (_logger)
         _logger->logTraffic(pkt, location, ev);
@@ -184,7 +184,7 @@ PacketFlow::logTraffic(Packet& pkt, Logged& location, TrafficLogger::TrafficEven
 void print_route(const Route& route) {
     for (int i = 0; i < route.size(); i++) {
         PacketSink* sink = route.at(i);
-        if (i > 0) 
+        if (i > 0)
             cout << " -> ";
         cout << sink->nodename();
     }

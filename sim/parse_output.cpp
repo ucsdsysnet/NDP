@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -95,7 +95,7 @@ int main(int argc, char** argv){
             int id;
             if (split)
                 id = atoi(split+1);
-            
+
             split[0]=0;
             string * name = new string(line+2);
 
@@ -123,7 +123,7 @@ int main(int argc, char** argv){
         fread(evRec,   sizeof(uint32_t), numread, logfile);
         fread(val1Rec, sizeof(double), numread, logfile);
         fread(val2Rec, sizeof(double), numread, logfile);
-        fread(val3Rec, sizeof(double), numread, logfile);  
+        fread(val3Rec, sizeof(double), numread, logfile);
     } else {
         /* new-style one record at a time */
         for (int i = 0; i < numRecords; i++) {
@@ -133,7 +133,7 @@ int main(int argc, char** argv){
             fread(&evRec[i],   sizeof(uint32_t), 1, logfile);
             fread(&val1Rec[i], sizeof(double), 1, logfile);
             fread(&val2Rec[i], sizeof(double), 1, logfile);
-            fread(&val3Rec[i], sizeof(double), 1, logfile);  
+            fread(&val3Rec[i], sizeof(double), 1, logfile);
         }
     }
 
@@ -141,7 +141,7 @@ int main(int argc, char** argv){
     //ev=rate
     //group by ID
 
-    //lets compute 
+    //lets compute
     hashmap<int, double> flow_rates;
     hashmap<int, double> flow_count;
 
@@ -179,7 +179,7 @@ int main(int argc, char** argv){
             continue;
 
         if (ascii) {
-            RawLogEvent event(timeRec[i], typeRec[i], idRec[i], evRec[i], 
+            RawLogEvent event(timeRec[i], typeRec[i], idRec[i], evRec[i],
                               val1Rec[i], val2Rec[i], val3Rec[i]);
             //cout << Logger::event_to_str(event) << endl;
             switch((Logger::EventType)typeRec[i]) {
@@ -188,10 +188,10 @@ int main(int argc, char** argv){
                 break;
             case Logger::TCP_EVENT: //1
             case Logger::TCP_STATE: //2
-                cout << TcpLoggerSimple::event_to_str(event) << endl; 
+                cout << TcpLoggerSimple::event_to_str(event) << endl;
                 break;
             case Logger::TRAFFIC_EVENT: //3
-                cout << TrafficLoggerSimple::event_to_str(event) << endl; 
+                cout << TrafficLoggerSimple::event_to_str(event) << endl;
                 break;
             case Logger::QUEUE_RECORD: //4
             case Logger::QUEUE_APPROX: //5
@@ -235,12 +235,12 @@ int main(int argc, char** argv){
                 break;
             }
         } else {
-            if ((typeRec[i]==(uint32_t)TYPE || TYPE==-1) 
+            if ((typeRec[i]==(uint32_t)TYPE || TYPE==-1)
                 && (evRec[i]==(uint32_t)EV || EV==-1)) {
                 if (verbose)
-                    cout << timeRec[i] << " Type=" << typeRec[i] << " EV=" << evRec[i] 
-                         << " ID=" << idRec[i] << " VAL1=" << val1Rec[i] 
-                         << " VAL2=" << val2Rec[i] << " VAL3=" << val3Rec[i] << endl;	
+                    cout << timeRec[i] << " Type=" << typeRec[i] << " EV=" << evRec[i]
+                         << " ID=" << idRec[i] << " VAL1=" << val1Rec[i]
+                         << " VAL2=" << val2Rec[i] << " VAL3=" << val3Rec[i] << endl;
 
                 if (!isnan(val3Rec[i])) {
                     if (flow_rates.find(idRec[i]) == flow_rates.end()){
@@ -299,7 +299,7 @@ int main(int argc, char** argv){
     }
 
     sort(rates.begin(), rates.end());
-  
+
     double total = 0;
     int cnt = rates.size()/10;
     int nn = rates.size();
@@ -307,15 +307,15 @@ int main(int argc, char** argv){
 
     for (int i=0;i<nn;i++){
         if (i<cnt)
-            total += rates[i]; 
+            total += rates[i];
 
         if (i>cnt&&!show)
             break;
     }
-    printf("Mean of lower 10pc (%d entries) is %f total mean %f  mean2 %f\n", 
-           cnt, total/cnt, mean_rate/rates.size(), 
+    printf("Mean of lower 10pc (%d entries) is %f total mean %f  mean2 %f\n",
+           cnt, total/cnt, mean_rate/rates.size(),
            mean_rate2/flow_rates2.size());
-  
+
     delete[] timeRec;
     delete[] typeRec;
     delete[] idRec;

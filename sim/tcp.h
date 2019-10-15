@@ -22,6 +22,7 @@
 
 //#define MAX_SENT 10000
 #define TCP_DEFAULT_DELAY_US 0u
+#define TCP_DEFAULT_STARTING_WND 10
 
 class TcpSink;
 class MultipathTcpSrc;
@@ -32,6 +33,7 @@ class TcpSrc : public PacketSink, public EventSource {
  public:
     TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist);
     TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist, simtime_picosec send_delay);
+    TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger, EventList &eventlist, simtime_picosec send_delay, int starting_wnd);
     uint32_t get_id(){ return id;}
     virtual void connect(const Route& routeout, const Route& routeback,
                          TcpSink& sink, simtime_picosec startTime);
@@ -51,6 +53,7 @@ class TcpSrc : public PacketSink, public EventSource {
     }
 
     void set_ssthresh(uint64_t s){_ssthresh = s;}
+    void set_starting_wnd(int s) {_starting_wnd = s;}
 
     uint32_t effective_window();
     virtual void rtx_timer_hook(simtime_picosec now,simtime_picosec period);
@@ -126,6 +129,7 @@ class TcpSrc : public PacketSink, public EventSource {
     // Connectivity
     PacketFlow _flow;
     bool _flow_started;
+    int _starting_wnd;
 
     // Mechanism
     void clear_timer(uint64_t start,uint64_t end);

@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include "fairpullqueue.h"
 #include "ndppacket.h"
 
@@ -87,7 +87,7 @@ FairPullQueue<PullPkt>::enqueue(PullPkt& pkt) {
 }
 
 template<class PullPkt>
-PullPkt* 
+PullPkt*
 FairPullQueue<PullPkt>::dequeue() {
     if (this->_pull_count == 0)
         return 0;
@@ -128,7 +128,7 @@ FairPullQueue<PullPkt>::flush_flow(int32_t flow_id) {
 }
 
 template<class PullPkt>
-bool 
+bool
 FairPullQueue<PullPkt>::queue_exists(const PullPkt& pkt) {
     typename map <int32_t, list<PullPkt*>*>::iterator i;
     i = _queue_map.find(pkt.flow_id());
@@ -138,7 +138,7 @@ FairPullQueue<PullPkt>::queue_exists(const PullPkt& pkt) {
 }
 
 template<class PullPkt>
-list<PullPkt*>* 
+list<PullPkt*>*
 FairPullQueue<PullPkt>::find_queue(const PullPkt& pkt) {
     typename map <int32_t, list<PullPkt*>*>::iterator i;
     i = _queue_map.find(pkt.flow_id());
@@ -148,12 +148,14 @@ FairPullQueue<PullPkt>::find_queue(const PullPkt& pkt) {
 }
 
 template<class PullPkt>
-list<PullPkt*>* 
+list<PullPkt*>*
 FairPullQueue<PullPkt>::create_queue(const PullPkt& pkt) {
     list<PullPkt*>* new_queue = new(list<PullPkt*>);
     _queue_map.insert(pair<int32_t, list<PullPkt*>*>(pkt.flow_id(), new_queue));
     return new_queue;
 }
+
+template class BasePullQueue<NdpPull>;
 
 template class FifoPullQueue<NdpPull>;
 template class FairPullQueue<NdpPull>;

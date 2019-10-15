@@ -23,7 +23,7 @@ def parse_file(file, percentile):
     flow_times = []
     with open(file, "r") as f:
         for line in f:
-            if not line.startswith("Flow "):
+            if not line.startswith("Flow ") or "tcpsrc" in line:
                 continue
 
             flow_results = matcher.match(line).groupdict()

@@ -11,10 +11,10 @@
 
 extern int CDF_WEB [];
 
-DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
-                               uint64_t bytes_to_send, vector<const Route*>* p,
-                               EventSource* stopped)
-    : DCTCPSrcTransfer(logger, pktLogger, eventlist, bytes_to_send, p, stopped, timeFromUs(TCP_DEFAULT_DELAY_US)) { }
+// DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
+//                                uint64_t bytes_to_send, vector<const Route*>* p,
+//                                EventSource* stopped)
+//     : DCTCPSrcTransfer(logger, pktLogger, eventlist, bytes_to_send, p, stopped, timeFromUs(TCP_DEFAULT_DELAY_US)) { }
 
 DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
                                uint64_t bytes_to_send, vector<const Route*>* p,
@@ -22,6 +22,7 @@ DCTCPSrcTransfer::DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, 
                                simtime_picosec host_delay) : DCTCPSrc(logger,pktLogger,eventlist,host_delay)
 {
   _is_active = false;
+  _is_finished = false;
   _ssthresh = 0xffffffff;
   //_cwnd = 90000;
   if(bytes_to_send)
@@ -78,8 +79,9 @@ DCTCPSrcTransfer::connect(const Route& routeout, const Route& routeback, TcpSink
 
 void
 DCTCPSrcTransfer::doNextEvent() {
-  if (!_is_active){
+  if (!_is_active && !_is_finished){
     _is_active = true;
+    _is_finished = false;
 
     //delete _route;
     if (_paths!=NULL){
@@ -100,13 +102,14 @@ DCTCPSrcTransfer::doNextEvent() {
 
 void
 DCTCPSrcTransfer::receivePacket(Packet& pkt){
-  if (_is_active){
+  if (_is_active || _is_finished){
       DCTCPSrc::receivePacket(pkt);
 
       if (_bytes_to_send>0){
           assert (!_mSrc);
-          if (_last_acked>=_bytes_to_send){
+          if (_last_acked>=_bytes_to_send && !_is_finished){
               _is_active = false;
+              _is_finished = true;
 
               cout << endl << "Flow " << str() << " " <<_bytes_to_send << " finished after " << timeAsUs(eventlist().now()-_started) << " us" << endl;
 

@@ -15,7 +15,7 @@ SAVEDIR=./results/nodes_"$NODES"_flowsize_"$FLOWSIZE"_ssthresh_"$SSTHRESH"_delay
 mkdir -p $SAVEDIR
     for nconn in ${NCONNS[@]}; do
         echo "Running delay="$delay", nconn="$nconn"..."
-        ../datacenter/htsim_dctcp_host_delay -seed $SEED -nodes $NODES -conns $nconn -sub 1 -ssthresh $SSTHRESH -flowsize $FLOWSIZE > $SAVEDIR/nconn_$nconn.out
+        ../datacenter/htsim_dctcp_host_delay -seed $SEED -nodes $NODES -conns $nconn -sub 1 -ssthresh $SSTHRESH -flowsize $FLOWSIZE -ackdelay $delay > $SAVEDIR/nconn_$nconn.out
     done
 ./compile_data.py $SAVEDIR/*.out -p $PERCENTILE -o ./results/nodes_"$NODES"_flowsize_"$FLOWSIZE"_ssthresh_"$SSTHRESH"_delay_"$delay"_percentile_"$PERCENTILE".data
 done

@@ -21,8 +21,8 @@ uint64_t generateFlowSize();
 
 class DCTCPSrcTransfer: public DCTCPSrc {
 public:
-  DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
-                 uint64_t b, vector<const Route*>* p, EventSource* stopped = NULL);
+  // DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
+  //                uint64_t b, vector<const Route*>* p, EventSource* stopped = NULL);
   DCTCPSrcTransfer(TcpLogger* logger, TrafficLogger* pktLogger, EventList &eventlist,
                  uint64_t b, vector<const Route*>* p, EventSource* stopped = NULL, simtime_picosec host_delay = 0);
   void connect(const Route& routeout, const Route& routeback, TcpSink& sink, simtime_picosec starttime);
@@ -36,7 +36,7 @@ public:
 // should really be private, but loggers want to see:
 
   uint64_t _bytes_to_send;
-  bool _is_active;
+  bool _is_active, _is_finished;
   simtime_picosec _started;
   vector<const Route*>* _paths;
   EventSource* _flow_stopped;

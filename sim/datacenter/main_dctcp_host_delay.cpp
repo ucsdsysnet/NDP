@@ -30,7 +30,7 @@
 //#include "bcube_topology.h"
 #include <list>
 
-#define PRINT_PATHS 1
+#define PRINT_PATHS 0
 
 #define PERIODIC 0
 #include "main.h"
@@ -38,7 +38,7 @@
 #define USE_FIRST_FIT 0
 #define FIRST_FIT_INTERVAL 100
 
-#define MAX_START_DELAY_US 100
+#define MAX_START_DELAY_US 0
 #define DEFAULT_PACKET_SIZE 9000
 #define DEFAULT_NODES 432
 #define DEFAULT_QUEUE_SIZE 100
@@ -53,7 +53,7 @@ string itoa(uint64_t n);
 EventList eventlist;
 
 int no_of_conns = 0, no_of_nodes = DEFAULT_NODES, ssthresh = 15, failed_links = 0,
-    flowsize=0, seed_val=0;
+    flowsize=0, seed_val=0, starting_wnd = 10, rto = 10;
 uint32_t ack_delay=0, host_delay=0;
 mem_b queuesize;
 stringstream filename(ios_base::out);
@@ -110,7 +110,7 @@ int parse_args(int argc, char** argv) {
             i++;
         } else if (!strcmp(argv[i],"-queuesize")){
             queuesize = memFromPkt(atoi(argv[i+1]));
-            cout << "queuesize "<<queuesize << endl;
+            cout << "queuesize "<< queuesize << endl;
             i++;
         } else if (!strcmp(argv[i],"-flowsize")){
             flowsize = atoi(argv[i+1]) * Packet::data_packet_size();
@@ -131,6 +131,14 @@ int parse_args(int argc, char** argv) {
         } else if (!strcmp(argv[i],"-hostdelay")) {
             host_delay = atoi(argv[i+1]);
             cout << "host_delay " << host_delay << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-startingwnd")) {
+            starting_wnd = atoi(argv[i+1]);
+            cout << "starting_wnd " << starting_wnd << endl;
+            i++;
+        } else if (!strcmp(argv[i],"-rto")) {
+            rto = atoi(argv[i+1]);
+            cout << "rto " << rto << endl;
             i++;
         } else {
             exit_error(argv[0], argv[i]);
@@ -249,9 +257,10 @@ int main(int argc, char **argv) {
                 tcpSrc = new DCTCPSrcTransfer(NULL, NULL, eventlist, flowsize, NULL, &stop_logger, timeFromUs(host_delay));
                 tcpSnk = new DCTCPSinkTransfer(eventlist, timeFromUs(ack_delay));
 
+                tcpSrc->set_starting_wnd(starting_wnd);
                 tcpSrc->set_ssthresh(ssthresh*Packet::data_packet_size());
                 // tcpSrc->set_flowsize(flowsize*Packet::data_packet_size());
-                tcpSrc->_rto = timeFromMs(10);
+                tcpSrc->_rto = timeFromMs(rto);
 
                 tcpSrc->setName("dctcp_" + ntoa(src) + "_" + ntoa(dest) + "_" + std::to_string(connID));
                 logfile.writeName(*tcpSrc);

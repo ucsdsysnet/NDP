@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #ifndef LOGGERS_H
 #define LOGGERS_H
 
@@ -98,7 +98,7 @@ class SinkLoggerSampling : public Logger, public EventSource {
     typedef map<MultipathTcpSrc*,double,lttime> multipath_map;
     multipath_map _multipath_src;
     multipath_map _multipath_seq;
-        
+
     simtime_picosec _last_time;
     simtime_picosec _period;
     Logger::EventType _sink_type;
@@ -153,7 +153,7 @@ class QcnLoggerSimple : public QcnLogger {
  public:
     void logQcn(QcnReactor &src, QcnEvent ev, double var3);
 
-    void logQcnQueue(QcnQueue &src, QcnQueueEvent ev, double var1, 
+    void logQcnQueue(QcnQueue &src, QcnQueueEvent ev, double var1,
                      double var2, double var3);
     static string event_to_str(RawLogEvent& event);
 };

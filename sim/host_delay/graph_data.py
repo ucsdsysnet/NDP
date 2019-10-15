@@ -18,6 +18,7 @@ def parse_args():
 
 
 def parse_data_file(file):
+    global percentile
     matcher = re.compile(".*nodes_(?P<nodes>\d+)_flowsize_(?P<flowsize>\d+)_ssthresh_(?P<ssthresh>\d+)_delay_(?P<delay>\d+)_percentile_(?P<percentile>\d+).*")
     file_info = matcher.match(file)
     if not file_info:
@@ -41,3 +42,4 @@ if __name__ == "__main__":
     graph_utils.plot_results(exps, args.output, title=args.title,
                              xlabel="Number of flows", ylabel="%dth percentile FCT (us)" % percentile,
                              markersize=0.0, legend_title="ACK Delay (us)")
+                             # ylim=(200,220), xlim=(200,400))

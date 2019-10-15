@@ -1,4 +1,4 @@
-// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-        
+// -*- c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t -*-
 #include <iostream>
 #include <iomanip>
 #include "loggers.h"
@@ -7,13 +7,13 @@ string Logger::event_to_str(RawLogEvent& event) {
     return event.str();
 }
 
-void QueueLoggerSimple::logQueue(Queue& queue, QueueLogger::QueueEvent ev, 
+void QueueLoggerSimple::logQueue(Queue& queue, QueueLogger::QueueEvent ev,
                                  Packet& pkt) {
     _logfile->writeRecord(Logger::QUEUE_EVENT,
-                          queue.id, ev, 
+                          queue.id, ev,
                           (double)queue.queuesize(),
                           pkt.flow().id,
-                          pkt.id()); 
+                          pkt.id());
 }
 
 string QueueLoggerSimple::event_to_str(RawLogEvent& event) {
@@ -38,23 +38,23 @@ string QueueLoggerSimple::event_to_str(RawLogEvent& event) {
         ss << " Ev BOUNCE";
         break;
     }
-    ss << " Qsize " << (uint64_t)event._val1 
-       << " FlowID " << (uint64_t)event._val2 
+    ss << " Qsize " << (uint64_t)event._val1
+       << " FlowID " << (uint64_t)event._val2
        << " PktID " << (uint64_t)event._val3;
     return ss.str();
 }
 
-QueueLoggerSampling::QueueLoggerSampling(simtime_picosec period, 
+QueueLoggerSampling::QueueLoggerSampling(simtime_picosec period,
                                          EventList &eventlist)
   : EventSource(eventlist,"QueuelogSampling"),
-    _queue(NULL), _lastlook(0), _period(period), _lastq(0), 
+    _queue(NULL), _lastlook(0), _period(period), _lastq(0),
     _seenQueueInD(false), _cumidle(0), _cumarr(0), _cumdrop(0)
-{	
+{
     eventlist.sourceIsPendingRel(*this,0);
 }
 
 void
-QueueLoggerSampling::doNextEvent() 
+QueueLoggerSampling::doNextEvent()
 {
     eventlist().sourceIsPendingRel(*this,_period);
     if (_queue==NULL) return;
@@ -78,8 +78,8 @@ QueueLoggerSampling::doNextEvent()
     simtime_picosec dt_ps = now - _lastlook;
     _lastlook = now;
     // if the queue is empty, we've just been idling
-    if ((_queue!=NULL) && (_queue->queuesize()==0)) 
-        _cumidle += timeAsSec(dt_ps); 
+    if ((_queue!=NULL) && (_queue->queuesize()==0))
+        _cumidle += timeAsSec(dt_ps);
     _logfile->writeRecord(QUEUE_RECORD, _queue->id, CUM_TRAFFIC, _cumarr,
                           _cumidle, _cumdrop);
 }
@@ -112,15 +112,15 @@ QueueLoggerSampling::logQueue(Queue& queue, QueueEvent ev, Packet &pkt) {
         _cumarr += timeAsSec(queue.drainTime(&pkt));
         if (queue.queuesize() > pkt.size()) // we've just been working
             {}
-        else { // we've just been idling 
+        else { // we've just been idling
             mem_b idledwork = queue.serviceCapacity(dt_ps);
-            _cumidle += dt; 
+            _cumidle += dt;
             _lastIdledInD = idledwork;
             _numIdledInD++;
         }
         break;
     case PKT_DROP: // assume we've just been working
-        { 
+        {
             assert(queue.queuesize() >= pkt.size()); // it is possible to
             // drop when queue is
             // idling, but this
@@ -133,7 +133,7 @@ QueueLoggerSampling::logQueue(Queue& queue, QueueEvent ev, Packet &pkt) {
             _numDropsInD++;
             break;
         }
-    case PKT_TRIM: 
+    case PKT_TRIM:
     case PKT_BOUNCE:
         /* we don't currently do anything with this */
         break;
@@ -153,7 +153,7 @@ string QueueLoggerSampling::event_to_str(RawLogEvent& event) {
                << " MaxQ=" << (int)event._val3;
             break;
         case QUEUE_OVERFLOW:
-            ss << " Ev OVERLOW LastIdled " << (int)event._val1 
+            ss << " Ev OVERFLOW LastIdled " << (int)event._val1
                << " LastDropped " << (int)event._val2 << " QueueBuf " << (int)event._val3;
             break;
         default:
@@ -174,14 +174,14 @@ string QueueLoggerSampling::event_to_str(RawLogEvent& event) {
 }
 
 
-void TrafficLoggerSimple::logTraffic(Packet& pkt, Logged& location, 
+void TrafficLoggerSimple::logTraffic(Packet& pkt, Logged& location,
                                      TrafficEvent ev) {
     _logfile->writeRecord(Logger::TRAFFIC_EVENT,
                           location.id,
                           ev,
                           pkt.flow().id,
                           pkt.id(),
-                          0); 
+                          0);
 }
 
 string TrafficLoggerSimple::event_to_str(RawLogEvent& event) {
@@ -218,19 +218,19 @@ string TrafficLoggerSimple::event_to_str(RawLogEvent& event) {
         ss << " Ev BOUNCE ";
         break;
     }
-    ss << " FlowID " << (uint64_t)event._val1 
+    ss << " FlowID " << (uint64_t)event._val1
        << " PktID " << (uint64_t)event._val2;
     return ss.str();
 }
 
-void TcpTrafficLogger::logTraffic(Packet& pkt, Logged& location, 
+void TcpTrafficLogger::logTraffic(Packet& pkt, Logged& location,
                                      TrafficEvent ev) {
     _logfile->writeRecord(Logger::TCP_TRAFFIC,
                           location.id,
                           ev,
                           pkt.flow().id,
                           pkt.id(),
-                          0); 
+                          0);
 }
 
 string TcpTrafficLogger::event_to_str(RawLogEvent& event) {
@@ -267,7 +267,7 @@ string TcpTrafficLogger::event_to_str(RawLogEvent& event) {
         ss << " Ev BOUNCE ";
         break;
     }
-    ss << " FlowID " << (uint64_t)event._val1 
+    ss << " FlowID " << (uint64_t)event._val1
        << " PktID " << (uint64_t)event._val2;
     return ss.str()
 ;
@@ -278,7 +278,7 @@ string TcpTrafficLogger::event_to_str(RawLogEvent& event) {
 #define NDP_IS_PULL 1<<29
 #define NDP_IS_HEADER 1<<28
 #define NDP_IS_LASTDATA 1<<27
-void NdpTrafficLogger::logTraffic(Packet& pkt, Logged& location, 
+void NdpTrafficLogger::logTraffic(Packet& pkt, Logged& location,
                                      TrafficEvent ev) {
     NdpPacket& p = static_cast<NdpPacket&>(pkt);
     uint32_t val3=0; // ugly hack to store NDP-specific data in a double
@@ -295,13 +295,13 @@ void NdpTrafficLogger::logTraffic(Packet& pkt, Logged& location,
 
     if (p.header_only())
         val3 |= NDP_IS_HEADER;
-    
+
     _logfile->writeRecord(Logger::NDP_TRAFFIC,
                           location.id,
                           ev,
                           p.flow().id,
                           p.id(),
-                          val3); 
+                          val3);
 }
 
 string NdpTrafficLogger::event_to_str(RawLogEvent& event) {
@@ -340,7 +340,7 @@ string NdpTrafficLogger::event_to_str(RawLogEvent& event) {
     }
     ss << " FlowID " << (uint64_t)event._val1;
     uint32_t val3i = (uint32_t)event._val3;
-    if (val3i & NDP_IS_ACK) { 
+    if (val3i & NDP_IS_ACK) {
         ss << " Ptype ACK"
            << " Ackno " << (uint64_t)event._val2;
     } else if (val3i & NDP_IS_NACK) {
@@ -356,7 +356,7 @@ string NdpTrafficLogger::event_to_str(RawLogEvent& event) {
             ss << " flag LASTDATA";
         }
     }
-    if (val3i & NDP_IS_HEADER) 
+    if (val3i & NDP_IS_HEADER)
         ss << " Psize HEADER";
     else
         ss << " Psize FULL";
@@ -364,20 +364,20 @@ string NdpTrafficLogger::event_to_str(RawLogEvent& event) {
 }
 
 void TcpLoggerSimple::logTcp(TcpSrc &tcp, TcpEvent ev) {
-    _logfile->writeRecord(Logger::TCP_EVENT, tcp.id, 
+    _logfile->writeRecord(Logger::TCP_EVENT, tcp.id,
                           ev,
-                          tcp._cwnd, 
-                          tcp._unacked, 
+                          tcp._cwnd,
+                          tcp._unacked,
                           tcp._in_fast_recovery?tcp._ssthresh:tcp._cwnd);
 
-    _logfile->writeRecord(Logger::TCP_STATE, tcp.id, 
+    _logfile->writeRecord(Logger::TCP_STATE, tcp.id,
                           TcpLogger::TCPSTATE_CNTRL,
                           tcp._cwnd,
                           tcp._ssthresh,
                           tcp._recoverq);
 
-    _logfile->writeRecord(Logger::TCP_STATE, tcp.id, 
-                          TcpLogger::TCPSTATE_SEQ, 
+    _logfile->writeRecord(Logger::TCP_STATE, tcp.id,
+                          TcpLogger::TCPSTATE_SEQ,
                           tcp._last_acked,
                           tcp._highest_sent,
                           tcp._RFC2988_RTO_timeout);
@@ -389,20 +389,20 @@ string TcpLoggerSimple::event_to_str(RawLogEvent& event) {
     switch(event._type) {
     case TcpLogger::TCP_EVENT:
         ss  << " Type TCP  ID " << event._id << " Ev " << event._ev
-            << "Cwnd " << (int)event._val1 << "Unacked " << (int)event._val2 
+            << "Cwnd " << (int)event._val1 << "Unacked " << (int)event._val2
             << "SSthresh " << (int)event._val3;
         break;
     case TcpLogger::TCP_STATE:
         ss << "Ambiguous data - fix me!";
     default:
-        ss << " Type " << event._type << " ID " << event._id 
-           << " Ev " << event._ev << " VAL1 " << event._val1 
-           << " VAL2 " << event._val2 << " VAL3 " << event._val3 << endl;	
+        ss << " Type " << event._type << " ID " << event._id
+           << " Ev " << event._ev << " VAL1 " << event._val1
+           << " VAL2 " << event._val2 << " VAL3 " << event._val3 << endl;
     }
     return ss.str();
 }
 
-AggregateTcpLogger::AggregateTcpLogger(simtime_picosec period, 
+AggregateTcpLogger::AggregateTcpLogger(simtime_picosec period,
                                        EventList& eventlist)
     :EventSource(eventlist,"bunchofflows"), _period(period)
 {
@@ -449,14 +449,14 @@ string AggregateTcpLogger::event_to_str(RawLogEvent& event) {
     return ss.str();
 }
 
-void MultipathTcpLoggerSimple::logMultipathTcp(MultipathTcpSrc& mtcp, 
+void MultipathTcpLoggerSimple::logMultipathTcp(MultipathTcpSrc& mtcp,
                                                MultipathTcpEvent ev){
     if (ev==MultipathTcpLogger::CHANGE_A) {
         _logfile->writeRecord(MultipathTcpLogger::MTCP, mtcp.id,
                               ev, mtcp.a, mtcp._alfa, 0);
     } else if (ev==MultipathTcpLogger::RTT_UPDATE) {
-        _logfile->writeRecord(MultipathTcpLogger::MTCP, mtcp.id, 
-                              ev, 
+        _logfile->writeRecord(MultipathTcpLogger::MTCP, mtcp.id,
+                              ev,
                               mtcp._subflows.front()->_rtt/1000000000,
                               mtcp._subflows.back()->_rtt/1000000000,
                               mtcp._subflows.front()->_mdev/1000000000);
@@ -475,15 +475,15 @@ string MultipathTcpLoggerSimple::event_to_str(RawLogEvent& event) {
     ss << " Type MTCP ID " << event._id;
     switch(event._ev) {
     case MultipathTcpLogger::CHANGE_A:
-        ss << " Ev CHANGE_A" << " ID " << event._id 
+        ss << " Ev CHANGE_A" << " ID " << event._id
            << "A " << event._val1 << "Alfa " << event._val2;
         break;
     case MultipathTcpLogger::RTT_UPDATE:
-        ss << " Ev RTT_UPD" << "ID " << event._id << " RTT1 " << (uint64_t)event._val1 
+        ss << " Ev RTT_UPD" << "ID " << event._id << " RTT1 " << (uint64_t)event._val1
            << " RTT2 " << (uint64_t)event._val2 << " Mdev " << event._val3;
         break;
     case MultipathTcpLogger::WINDOW_UPDATE:
-        ss << " Ev WIN_UPD" << "ID " << event._id << " Win1 " << (uint64_t)event._val1 
+        ss << " Ev WIN_UPD" << "ID " << event._id << " Win1 " << (uint64_t)event._val1
            << " Win2 " << (uint64_t)event._val2;
         break;
     case MultipathTcpLogger::RATE:
@@ -491,7 +491,7 @@ string MultipathTcpLoggerSimple::event_to_str(RawLogEvent& event) {
         // MultipathTcpLoggerSampling, but under the same type as
         // MultipathTcpLoggerSimple is using.  Should probably use a
         // different Type for this event.
-        ss << " Ev RATE A " << event._val1 << " Gput " << (uint64_t)event._val2 
+        ss << " Ev RATE A " << event._val1 << " Gput " << (uint64_t)event._val2
            << " Tput " << (uint64_t)event._val3;
         break;
     default:
@@ -505,7 +505,7 @@ vector<MultipathTcpSink*> _mtcp_sinks;
 vector<TcpSrc*> _tcp_sources;
 vector<TcpSink*> _mtcp_sources;
 
-MemoryLoggerSampling::MemoryLoggerSampling(simtime_picosec period, 
+MemoryLoggerSampling::MemoryLoggerSampling(simtime_picosec period,
                                            EventList& eventlist):
     EventSource(eventlist,"MemorySampling"), _period(period)
 {
@@ -530,10 +530,10 @@ void MemoryLoggerSampling::monitorMultipathTcpSource(MultipathTcpSrc* src){
 
 void MemoryLoggerSampling::doNextEvent(){
     uint64_t i;
-    eventlist().sourceIsPendingRel(*this,_period);  
-  
+    eventlist().sourceIsPendingRel(*this,_period);
+
     //simtime_picosec now = eventlist().now();
-  
+
     for (i=0; i<_tcp_sinks.size(); i++) {
         _logfile->writeRecord(Logger::TCP_MEMORY, _tcp_sinks[i]->get_id(),
                               TcpLogger::MEMORY, 0, 0,
@@ -567,7 +567,7 @@ string MemoryLoggerSampling::event_to_str(RawLogEvent& event) {
     ss << fixed << setprecision(9) << event._time;
     switch(event._type) {
     case Logger::TCP_MEMORY:
-        
+
         ss << " Type TCP_MEMORY ID " << event._id;
 
             switch(event._ev) {
@@ -586,11 +586,11 @@ string MemoryLoggerSampling::event_to_str(RawLogEvent& event) {
 }
 
 
-SinkLoggerSampling::SinkLoggerSampling(simtime_picosec period, 
+SinkLoggerSampling::SinkLoggerSampling(simtime_picosec period,
                                        EventList& eventlist,
                                        Logger::EventType sink_type,
                                        int event_type):
-    EventSource(eventlist,"SinkSampling"), _last_time(0), _period(period), 
+    EventSource(eventlist,"SinkSampling"), _last_time(0), _period(period),
     _sink_type(sink_type), _event_type(event_type)
 {
     eventlist.sourceIsPendingRel(*this,0);
@@ -622,7 +622,7 @@ void SinkLoggerSampling::monitorSink(DataReceiver* sink){
 }
 
 void SinkLoggerSampling::doNextEvent(){
-    eventlist().sourceIsPendingRel(*this,_period);  
+    eventlist().sourceIsPendingRel(*this,_period);
     simtime_picosec now = eventlist().now();
     simtime_picosec delta = now - _last_time;
     _last_time = now;
@@ -637,10 +637,10 @@ void SinkLoggerSampling::doNextEvent(){
             //deltaSnd = _sinks[i]->sndbuf() - _last_sndbuf[i];
             if (delta > 0)
                 rate = deltaB * 1000000000000.0 / delta;//Bps
-            else 
+            else
                 rate = 0;
             _logfile->writeRecord(_sink_type, _sinks[i]->get_id(),
-                                  _event_type, _sinks[i]->cumulative_ack(), 
+                                  _event_type, _sinks[i]->cumulative_ack(),
                                   deltaB>0?(deltaSnd * 100000 / deltaB):0, rate);
 
             _last_rate[i] = rate;
@@ -675,19 +675,19 @@ void SinkLoggerSampling::doNextEvent(){
         }
 
         _logfile->writeRecord(Logger::MTCP, mtcp->id,
-                              MultipathTcpLogger::RATE, mtcp->a, goodput, 
+                              MultipathTcpLogger::RATE, mtcp->a, goodput,
                               throughput);
 
         _multipath_src[mtcp] = 0;
     }
 }
 
-TcpSinkLoggerSampling::TcpSinkLoggerSampling(simtime_picosec period, 
+TcpSinkLoggerSampling::TcpSinkLoggerSampling(simtime_picosec period,
                       EventList& eventlist):
     SinkLoggerSampling(period, eventlist, Logger::TCP_SINK, TcpLogger::RATE)
 {
 }
- 
+
 string TcpSinkLoggerSampling::event_to_str(RawLogEvent& event) {
     stringstream ss;
     ss << fixed << setprecision(9) << event._time;
@@ -705,7 +705,7 @@ string TcpSinkLoggerSampling::event_to_str(RawLogEvent& event) {
         ss << " Type MTCP ID " << event._id;
         switch(event._ev) {
         case MultipathTcpLogger::RATE:
-            ss << " Ev RATE A " << event._val1 << " Gput " << (uint64_t)event._val2 
+            ss << " Ev RATE A " << event._val1 << " Gput " << (uint64_t)event._val2
                << " Tput " << (uint64_t)event._val3;
             break;
         default:
@@ -717,10 +717,10 @@ string TcpSinkLoggerSampling::event_to_str(RawLogEvent& event) {
     }
     return ss.str();
 }
-            
 
 
-NdpSinkLoggerSampling::NdpSinkLoggerSampling(simtime_picosec period, 
+
+NdpSinkLoggerSampling::NdpSinkLoggerSampling(simtime_picosec period,
                       EventList& eventlist):
     SinkLoggerSampling(period, eventlist, Logger::NDP_SINK, NdpLogger::RATE)
 {
@@ -728,7 +728,7 @@ NdpSinkLoggerSampling::NdpSinkLoggerSampling(simtime_picosec period,
 }
 
 void NdpSinkLoggerSampling::doNextEvent(){
-    eventlist().sourceIsPendingRel(*this,_period);  
+    eventlist().sourceIsPendingRel(*this,_period);
     simtime_picosec now = eventlist().now();
     simtime_picosec delta = now - _last_time;
     _last_time = now;
@@ -742,10 +742,10 @@ void NdpSinkLoggerSampling::doNextEvent(){
             deltaB = sink->total_received() - _last_seq[i];
             if (delta > 0)
                 rate = deltaB * 1000000000000.0 / delta;//Bps
-            else 
+            else
                 rate = 0;
             _logfile->writeRecord(_sink_type, sink->get_id(),
-                                  _event_type, sink->cumulative_ack(), 
+                                  _event_type, sink->cumulative_ack(),
                                   deltaB>0?(deltaSnd * 100000 / deltaB):0, rate);
 
             _last_rate[i] = rate;
@@ -769,14 +769,14 @@ string NdpSinkLoggerSampling::event_to_str(RawLogEvent& event) {
     }
     return ss.str();
 }
-            
+
 void QcnLoggerSimple::logQcn(QcnReactor &src, QcnEvent ev, double var3) {
     if (ev!=QcnLogger::QCN_SEND)
         _logfile->writeRecord(Logger::QCN_EVENT,src.id,ev,
                               src._currentRate,src._packetCycles,var3);
 }
 
-void QcnLoggerSimple::logQcnQueue(QcnQueue &src, QcnQueueEvent ev, 
+void QcnLoggerSimple::logQcnQueue(QcnQueue &src, QcnQueueEvent ev,
                                   double var1, double var2, double var3) {
     _logfile->writeRecord(Logger::QCNQUEUE_EVENT,src.id,ev,var1,var2,var3);
 };
@@ -794,7 +794,7 @@ string QcnLoggerSimple::event_to_str(RawLogEvent& event) {
         case QCN_INC:
             ss << " Ev INC";
             break;
-        case QCN_DEC: 
+        case QCN_DEC:
             ss << " Ev DEC";
             break;
         case QCN_INCD:
@@ -823,7 +823,7 @@ string QcnLoggerSimple::event_to_str(RawLogEvent& event) {
             ss << " Ev Unknown(" << event._ev << ")";
             break;
         }
-        ss << " Val1 " << event._val1 << " Val2 " << event._val2 
+        ss << " Val1 " << event._val1 << " Val2 " << event._val2
            << " Val3 " << event._val3;
     }
     return ss.str();

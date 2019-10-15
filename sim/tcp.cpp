@@ -10,11 +10,21 @@
 ////////////////////////////////////////////////////////////////
 
 TcpSrc::TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger,
-               EventList &eventlist) : TcpSrc(logger, pktlogger, eventlist, TCP_DEFAULT_DELAY_US) { }
+               EventList &eventlist) : TcpSrc(logger, pktlogger, eventlist,
+                                              timeFromUs(TCP_DEFAULT_DELAY_US), TCP_DEFAULT_STARTING_WND) { }
 
 TcpSrc::TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger,
-               EventList &eventlist, simtime_picosec send_delay)
-    : EventSource(eventlist,"tcp"),  _logger(logger), _flow(pktlogger), _flow_started(false), _send_delay(send_delay)
+               EventList &eventlist,
+               simtime_picosec send_delay) : TcpSrc(logger, pktlogger, eventlist,
+                                                    timeFromUs(TCP_DEFAULT_DELAY_US), TCP_DEFAULT_STARTING_WND) { }
+
+TcpSrc::TcpSrc(TcpLogger* logger, TrafficLogger* pktlogger,
+               EventList &eventlist, simtime_picosec send_delay, int starting_wnd)
+        : EventSource(eventlist,"tcp"),
+          _logger(logger), _flow(pktlogger),
+          _flow_started(false),
+          _starting_wnd(starting_wnd),
+          _send_delay(send_delay)
 {
     _mss = Packet::data_packet_size();
     _maxcwnd = 0xffffffff;//MAX_SENT*_mss;
@@ -91,7 +101,7 @@ void TcpSrc::set_app_limit(int pktps) {
 
 void
 TcpSrc::startflow() {
-    _cwnd = 10*_mss;
+    _cwnd = _starting_wnd*_mss;
     _unacked = _cwnd;
     _established = false;
     _flow_started = true;
@@ -446,7 +456,7 @@ TcpSrc::send_packets() {
         if (data_seq>_highest_data_seq)
             _highest_data_seq = data_seq;
 
-        //      cout << "Transmit packet on " << _flow.id << " " << _highest_sent+1 << "[" << data_seq << "] packets in flight " << _sent_packets.crt_count << " diff " << (_highest_sent+_mss-_last_acked)/1000 << " last_acked " << _last_acked << " at " << timeAsMs(eventlist().now()) << endl;
+        // cout << "Transmit packet on " << _flow.id << " " << _highest_sent+1 << "[" << data_seq << "] packets in flight " << _sent_packets.crt_count << " diff " << (_highest_sent+_mss-_last_acked)/1000 << " last_acked " << _last_acked << " at " << timeAsMs(eventlist().now()) << endl;
 #endif
 
 #ifdef PACKET_SCATTER
