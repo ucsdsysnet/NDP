@@ -224,7 +224,8 @@ int main(int argc, char **argv) {
 
     ConnectionMatrix* conns = new ConnectionMatrix(no_of_nodes);
     cout << "Running perm with " << no_of_conns << " connections" << endl;
-    conns->setRandomGuaranteed(no_of_conns, seed_val);
+    // conns->setRandomGuaranteed(no_of_conns, seed_val);
+    conns->setIncast(no_of_conns, 0);
 
     TcpSrc* tcpSrc;
     TcpSink* tcpSnk;

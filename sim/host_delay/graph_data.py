@@ -19,7 +19,7 @@ def parse_args():
 
 def parse_data_file(file):
     global percentile
-    matcher = re.compile(".*nodes_(?P<nodes>\d+)_flowsize_(?P<flowsize>\d+)_ssthresh_(?P<ssthresh>\d+)_delay_(?P<delay>\d+)_percentile_(?P<percentile>\d+).*")
+    matcher = re.compile(".*nodes_(?P<nodes>\d+)_flowsize_(?P<flowsize>\d+)_ssthresh_(?P<ssthresh>\d+)_rto_(?P<rto>\d+)_delay_(?P<delay>\d+)_percentile_(?P<percentile>\d+).*")
     file_info = matcher.match(file)
     if not file_info:
         import pdb; pdb.set_trace()
@@ -35,6 +35,13 @@ if __name__ == "__main__":
     args = parse_args()
     input_files = args.input_files
     exps = {}
+    log_files = []
+    out_files = []
+    for file in input_files:
+        if file.endswith("log"):
+            log_files.append(file)
+        if file.endswith("out"):
+            out_files.append(file)
     for file in input_files:
         line, label = parse_data_file(file)
         exp = {'line': line, 'label': label}
